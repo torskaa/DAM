@@ -1,0 +1,8 @@
+{
+  "name": "Singha Brand World DAM",
+  "description": "Enterprise Digital Asset Management platform featuring AI auto-tagging, natural language semantic search, face and object recognition, and secure expiring link sharing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
