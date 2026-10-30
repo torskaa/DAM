@@ -37,6 +37,8 @@ interface AssetGridProps {
   onDownloadSingle: (asset: DAMAsset, e: React.MouseEvent) => void;
   semanticMatchScores?: Map<string, { score: number; reason: string }>;
   canDelete?: boolean;
+  activeCategory?: string;
+  onSelectCategory?: (category: string) => void;
 }
 
 export const AssetGrid: React.FC<AssetGridProps> = ({
@@ -56,6 +58,8 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
   onDownloadSingle,
   semanticMatchScores,
   canDelete = false,
+  activeCategory = 'ALL',
+  onSelectCategory,
 }) => {
   const [viewMode, setViewMode] = useState<'visual' | 'compact' | 'table'>('visual');
   const [sortBy, setSortBy] = useState<'relevance' | 'newest' | 'size' | 'downloads'>('relevance');
@@ -63,6 +67,30 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
 
   const selectedAssets = assets.filter((a) => selectedIds.includes(a.id));
   const isAllSelected = assets.length > 0 && selectedIds.length === assets.length;
+
+  // Spacebar Quick-View support: if user presses spacebar and has a selected asset, open detail
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
+        if (selectedAssets.length > 0) {
+          e.preventDefault();
+          onOpenDetail(selectedAssets[0]);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedAssets, onOpenDetail]);
+
+  // Fastwork-style Category Ribbon options
+  const categoryRibbon = [
+    { id: 'ALL', label: 'All Items' },
+    { id: 'Logos & Identity', label: 'Logos & Identity' },
+    { id: 'Packaging', label: 'Packaging & Dielines' },
+    { id: 'Campaign Imagery', label: 'Campaign Visuals' },
+    { id: 'POSM & Retail', label: 'POSM & Retail' },
+    { id: 'Guidelines & Print', label: 'Guidelines & Print' },
+  ];
 
   // Sorting
   const sortedAssets = [...assets].sort((a, b) => {
@@ -85,112 +113,136 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
 
   return (
     <div className="flex-1 flex flex-col space-y-4">
-      {/* Grid Controls Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200">
+      {/* Fastwork.co Style Horizontal Category Ribbon */}
+      {onSelectCategory && (
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none border-b border-[var(--border-card)]">
+          {categoryRibbon.map((cat) => {
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => onSelectCategory(cat.id)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isActive
+                    ? 'bg-[var(--color-brand)] text-white shadow-xs font-semibold'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
+                }`}
+              >
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Grid Controls Header (Dub.co Style) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-card)]">
         
         {/* Left: Total Results count & Select All */}
-        <div className="flex items-center gap-4">
-          <span className="text-xs font-semibold text-neutral-600 font-mono tabular-nums">
-            {assets.length} Results
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-medium text-[var(--text-secondary)] font-mono tabular-nums">
+            {assets.length} {assets.length === 1 ? 'file' : 'files'}
           </span>
+
+          <span className="opacity-20">·</span>
 
           <button
             onClick={isAllSelected ? onClearSelection : onSelectAll}
-            className="text-xs text-neutral-600 hover:text-neutral-900 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             {isAllSelected ? (
-              <CheckSquare className="w-3.5 h-3.5 text-amber-500" />
+              <CheckSquare className="w-3.5 h-3.5 text-[var(--color-brand)]" />
             ) : (
-              <Square className="w-3.5 h-3.5 text-neutral-600" />
+              <Square className="w-3.5 h-3.5 text-[var(--text-muted)]" />
             )}
             <span>{isAllSelected ? 'Deselect All' : 'Select All'}</span>
           </button>
         </div>
 
-        {/* Right: Sort By & View Modes */}
+        {/* Right: Sort By & View Density Modes (Dub.co Style) */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-neutral-600">
-            <ArrowUpDown className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
+            <ArrowUpDown className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-transparent text-xs font-semibold text-neutral-800 border-none outline-none cursor-pointer pr-2"
+              className="bg-transparent text-xs font-medium text-[var(--text-primary)] border-none outline-none cursor-pointer pr-1"
             >
-              <option value="relevance">Most Relevant / AI Rank</option>
-              <option value="newest">Newest Uploads</option>
-              <option value="size">File Size (Largest)</option>
-              <option value="downloads">Most Downloaded</option>
+              <option value="relevance" className="bg-[var(--surface-card)] text-[var(--text-primary)]">Sort: AI Relevance</option>
+              <option value="newest" className="bg-[var(--surface-card)] text-[var(--text-primary)]">Sort: Newest Uploads</option>
+              <option value="size" className="bg-[var(--surface-card)] text-[var(--text-primary)]">Sort: File Size</option>
+              <option value="downloads" className="bg-[var(--surface-card)] text-[var(--text-primary)]">Sort: Most Downloaded</option>
             </select>
           </div>
 
-          <div className="h-4 w-px bg-neutral-200" />
+          <div className="h-3.5 w-px bg-[var(--border-card)]" />
 
-          {/* View Mode Segmented Controls */}
-          <div className="flex items-center p-0.5 bg-neutral-100 rounded-md">
+          {/* View Mode Segmented Controls (Dub.co Style) */}
+          <div className="flex items-center p-0.5 bg-[var(--surface-subtle)] rounded-lg border border-[var(--border-card)]">
             <button
               onClick={() => setViewMode('visual')}
-              className={`p-1 rounded transition-colors cursor-pointer ${
+              className={`p-1.5 rounded-md transition-all cursor-pointer ${
                 viewMode === 'visual'
-                  ? 'bg-white text-neutral-900 shadow-xs'
-                  : 'text-neutral-600 hover:text-neutral-900'
+                  ? 'bg-[var(--surface-card)] text-[var(--color-brand)] shadow-xs font-semibold'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
-              title="Visual Cards (Dash.app Style)"
+              title="Comfortable Grid"
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('compact')}
-              className={`p-1 rounded transition-colors cursor-pointer ${
+              className={`p-1.5 rounded-md transition-all cursor-pointer ${
                 viewMode === 'compact'
-                  ? 'bg-white text-neutral-900 shadow-xs'
-                  : 'text-neutral-600 hover:text-neutral-900'
+                  ? 'bg-[var(--surface-card)] text-[var(--color-brand)] shadow-xs font-semibold'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
               title="Compact Grid"
             >
-              <Grid3X3 className="w-4 h-4" />
+              <Grid3X3 className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-1 rounded transition-colors cursor-pointer ${
+              className={`p-1.5 rounded-md transition-all cursor-pointer ${
                 viewMode === 'table'
-                  ? 'bg-white text-neutral-900 shadow-xs'
-                  : 'text-neutral-600 hover:text-neutral-900'
+                  ? 'bg-[var(--surface-card)] text-[var(--color-brand)] shadow-xs font-semibold'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
-              title="Spreadsheet / Table View"
+              title="List & Spreadsheet View"
             >
-              <List className="w-4 h-4" />
+              <List className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Floating Batch Selection Bar */}
+      {/* Floating Batch Selection Bar (Dub.co Island Style) */}
       {selectedIds.length > 0 && (
-        <div className="sticky top-20 z-30 bg-charcoal text-white rounded-[12px] border border-stone/30 p-2.5 px-4 shadow-xl flex flex-wrap items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold font-mono tabular-nums">
-              {selectedIds.length} {selectedIds.length === 1 ? 'asset' : 'assets'} selected
+        <div className="sticky top-20 z-30 bg-[#170345] text-white rounded-xl border border-[#3410D5] p-2.5 px-4 shadow-2xl flex flex-wrap items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-150 backdrop-blur-md">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-semibold font-mono tabular-nums bg-white/15 px-2 py-0.5 rounded-md text-[#CAEB0E]">
+              {selectedIds.length} selected
             </span>
             <button
               onClick={onClearSelection}
-              className="text-stone hover:text-white text-xs underline cursor-pointer"
+              className="text-[#CCC6FB] hover:text-white text-xs underline cursor-pointer"
             >
-              Clear
+              Deselect
             </button>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <button
               onClick={() => onBatchShare(selectedAssets)}
-              className="px-3 py-1.5 bg-marigold hover:bg-saffron text-charcoal font-bold text-xs rounded-[8px] flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3 py-1.5 bg-[var(--color-brand)] hover:brightness-110 text-white font-medium text-xs rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span>Create Expiring Share Link</span>
+              <span>Expiring Link</span>
             </button>
 
             <button
               onClick={() => onBatchDownload(selectedAssets)}
-              className="px-3 py-1.5 bg-charcoal hover:bg-black text-white border border-stone/40 text-xs font-medium rounded-[8px] flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download (.ZIP)</span>
@@ -199,29 +251,29 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
             {onBatchAddToCollection && (
               <button
                 onClick={() => onBatchAddToCollection(selectedAssets)}
-                className="px-3 py-1.5 bg-charcoal hover:bg-black text-white border border-stone/40 text-xs font-medium rounded-[8px] flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <FolderPlus className="w-3.5 h-3.5" />
-                <span>Add to Collection</span>
+                <span>Add to Kit</span>
               </button>
             )}
 
             <button
               onClick={() => onBatchAiTag(selectedAssets)}
-              className="px-3 py-1.5 bg-charcoal hover:bg-black text-marigold border border-stone/40 text-xs font-medium rounded-[8px] flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3 py-1.5 bg-[#CAEB0E]/20 hover:bg-[#CAEB0E]/30 text-[#CAEB0E] text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Trigger AI vision auto-tagging for selected assets"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>AI Re-Scan</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#CAEB0E]" />
+              <span>AI Auto-Tag</span>
             </button>
 
             {onBatchRename && (
               <button
                 onClick={() => setIsRenameModalOpen(true)}
-                className="px-3 py-1.5 bg-notion-blue hover:bg-signal-blue text-white text-xs font-semibold rounded-[8px] flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-                title="Bulk rename selected assets"
+                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Type className="w-3.5 h-3.5" />
-                <span>Bulk Rename</span>
+                <span>Rename</span>
               </button>
             )}
 
@@ -232,7 +284,7 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
                     onBatchDelete(selectedIds);
                   }
                 }}
-                className="px-3 py-1.5 bg-coral/20 hover:bg-coral/30 text-coral border border-coral/40 text-xs font-medium rounded-[8px] flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3 py-1.5 bg-[#E03434]/20 hover:bg-[#E03434]/30 text-[#E03434] text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete</span>
@@ -300,16 +352,16 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
 
       {/* View Mode: Spreadsheet / Table View with Tabular Figures */}
       {viewMode === 'table' && sortedAssets.length > 0 && (
-        <div className="bg-white border border-black/[0.08] rounded-[12px] overflow-x-auto shadow-xs">
+        <div className="bg-[var(--surface-card)] border border-[var(--border-card)] rounded-[12px] overflow-x-auto shadow-xs">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-paper-warmth border-b border-black/[0.08] text-stone font-semibold">
+              <tr className="bg-[var(--surface-subtle)] border-b border-[var(--border-card)] text-[var(--text-secondary)] font-semibold">
                 <th className="py-2.5 px-3 w-8">
                   <input
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={isAllSelected ? onClearSelection : onSelectAll}
-                    className="rounded border-black/20 text-notion-blue focus:ring-notion-blue"
+                    className="rounded border-[var(--border-card)] text-[var(--color-brand)] focus:ring-[var(--color-brand)]"
                   />
                 </th>
                 <th className="py-2.5 px-3">Asset</th>
@@ -322,15 +374,15 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
                 <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-black/[0.04]">
+            <tbody className="divide-y divide-[var(--border-card)]/40">
               {sortedAssets.map((asset) => {
                 const isSelected = selectedIds.includes(asset.id);
                 return (
                   <tr
                     key={asset.id}
                     onClick={() => onOpenDetail(asset)}
-                    className={`hover:bg-paper-warmth cursor-pointer transition-colors ${
-                      isSelected ? 'bg-sky-tint/50' : ''
+                    className={`hover:bg-[var(--surface-hover)] cursor-pointer transition-colors ${
+                      isSelected ? 'bg-[var(--surface-subtle)]/70' : ''
                     }`}
                   >
                     <td className="py-2.5 px-3" onClick={(e) => e.stopPropagation()}>
@@ -338,7 +390,7 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
                         type="checkbox"
                         checked={isSelected}
                         onChange={(e) => onToggleSelect(asset.id, e as any)}
-                        className="rounded border-black/20 text-notion-blue focus:ring-notion-blue"
+                        className="rounded border-[var(--border-card)] text-[var(--color-brand)] focus:ring-[var(--color-brand)]"
                       />
                     </td>
                     <td className="py-2.5 px-3">
@@ -346,36 +398,46 @@ export const AssetGrid: React.FC<AssetGridProps> = ({
                         <img
                           src={asset.previewUrl}
                           alt={asset.title}
-                          className="w-9 h-9 rounded object-cover border border-neutral-200 shrink-0"
+                          className="w-9 h-9 rounded object-cover border border-[var(--border-card)] shrink-0"
                         />
                         <div className="min-w-0">
-                          <p className="font-bold text-neutral-900 truncate max-w-[200px]">{asset.title}</p>
-                          <p className="text-[11px] text-neutral-600 font-mono truncate">{asset.filename}</p>
+                          <p className="font-bold text-[var(--text-primary)] truncate max-w-[200px]">{asset.title}</p>
+                          <p className="text-[11px] text-[var(--text-muted)] font-mono truncate">{asset.filename}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-2.5 px-3 font-semibold text-neutral-800">{asset.brand}</td>
-                    <td className="py-2.5 px-3 text-neutral-600">{asset.category}</td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-neutral-700">.{asset.fileFormat}</td>
-                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-neutral-600">{asset.fileSize}</td>
-                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-neutral-600">
+                    <td className="py-2.5 px-3 font-semibold text-[var(--text-primary)]">{asset.brand}</td>
+                    <td className="py-2.5 px-3 text-[var(--text-secondary)]">{asset.category}</td>
+                    <td className="py-2.5 px-3 font-mono font-bold text-[var(--text-primary)]">.{asset.fileFormat}</td>
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-[var(--text-secondary)]">{asset.fileSize}</td>
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-[var(--text-secondary)]">
                       {asset.dimensions.width}x{asset.dimensions.height}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-neutral-700">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums text-[var(--text-primary)] font-semibold">
                       {asset.downloadsCount}
                     </td>
                     <td className="py-2.5 px-3 text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1.5">
                         <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onBatchAiTag([asset]);
+                          }}
+                          className="p-1.5 hover:bg-[var(--surface-subtle)] rounded text-[var(--text-secondary)] hover:text-[var(--color-brand)] cursor-pointer transition-colors"
+                          title="Trigger AI Auto-Tagging"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-[#CAEB0E]" />
+                        </button>
+                        <button
                           onClick={(e) => onShareSingle(asset, e)}
-                          className="p-1.5 hover:bg-neutral-100 rounded text-neutral-600 hover:text-neutral-900 cursor-pointer"
+                          className="p-1.5 hover:bg-[var(--surface-subtle)] rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
                           title="Share"
                         >
                           <Share2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={(e) => onDownloadSingle(asset, e)}
-                          className="p-1.5 hover:bg-neutral-100 rounded text-neutral-600 hover:text-neutral-900 cursor-pointer"
+                          className="p-1.5 hover:bg-[var(--surface-subtle)] rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
                           title="Download"
                         >
                           <Download className="w-3.5 h-3.5" />

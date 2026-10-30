@@ -82,6 +82,9 @@ interface ProfileDropdownProps extends React.HTMLAttributes<HTMLDivElement> {
   onOpenShares?: () => void;
   onOpenAuth?: () => void;
   onSignOut?: () => void;
+  onOpenAiLab?: () => void;
+  onOpenAnalytics?: () => void;
+  onOpenProfileSettings?: () => void;
 }
 
 export function ProfileDropdown({
@@ -93,6 +96,9 @@ export function ProfileDropdown({
   onOpenShares,
   onOpenAuth,
   onSignOut,
+  onOpenAiLab,
+  onOpenAnalytics,
+  onOpenProfileSettings,
   className,
   ...props
 }: ProfileDropdownProps) {
@@ -147,20 +153,21 @@ export function ProfileDropdown({
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "h-10 flex items-center gap-3 px-3 py-1.5 rounded-[8px] bg-white border transition-all duration-200 cursor-pointer focus:outline-none",
+            "h-10 flex items-center gap-3 px-3 py-1.5 rounded-[8px] border transition-all duration-200 cursor-pointer focus:outline-none",
+            "bg-[var(--surface-card)] text-[var(--text-primary)] border-[var(--border-card)]",
             isOpen 
-              ? "border-notion-blue bg-sky-tint/50 shadow-xs ring-2 ring-notion-blue/15" 
-              : "border-black/[0.08] hover:border-black/[0.18] hover:bg-paper-warmth shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+              ? "border-[var(--color-brand)] bg-[var(--surface-subtle)] shadow-xs ring-2 ring-[var(--color-brand)]/20" 
+              : "hover:border-[var(--color-brand)]/40 hover:bg-[var(--surface-hover)] shadow-xs"
           )}
         >
           {/* Text block: Name and Role */}
           <div className="text-left flex-1 min-w-0 pr-1">
-            <div className="text-[13px] font-semibold text-charcoal tracking-tight leading-tight truncate max-w-[130px] sm:max-w-[160px]">
+            <div className="text-[13px] font-semibold text-[var(--text-primary)] tracking-tight leading-tight truncate max-w-[130px] sm:max-w-[160px]">
               {data.name}
             </div>
-            <div className="text-[11px] font-medium text-stone tracking-tight leading-tight truncate flex items-center gap-1.5 mt-0.5">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              <span className="truncate max-w-[110px] sm:max-w-[140px] text-graphite">
+            <div className="text-[11px] font-medium text-[var(--text-secondary)] tracking-tight leading-tight truncate flex items-center gap-1.5 mt-0.5">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span className="truncate max-w-[110px] sm:max-w-[140px] text-[var(--text-secondary)]">
                 {currentRole}
               </span>
             </div>
@@ -168,8 +175,8 @@ export function ProfileDropdown({
 
           {/* Avatar with Singha Gold / Marigold ring */}
           <div className="relative shrink-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-marigold via-saffron to-amber-600 p-[1.5px] shadow-xs">
-              <div className="w-full h-full rounded-full overflow-hidden bg-charcoal flex items-center justify-center text-white text-[11px] font-bold">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#5945F1] via-[#FD02B0] to-[#CAEB0E] p-[1.5px] shadow-xs">
+              <div className="w-full h-full rounded-full overflow-hidden bg-[var(--surface-app)] flex items-center justify-center text-white text-[11px] font-bold">
                 {data.avatar ? (
                   <img
                     src={data.avatar}
@@ -180,7 +187,7 @@ export function ProfileDropdown({
                     }}
                   />
                 ) : null}
-                <span className="uppercase text-[11px] font-semibold text-marigold">{initials}</span>
+                <span className="uppercase text-[11px] font-semibold text-[var(--color-brand-secondary)]">{initials}</span>
               </div>
             </div>
           </div>
@@ -201,8 +208,8 @@ export function ProfileDropdown({
             className={cn(
               "transition-all duration-200",
               isOpen
-                ? "text-notion-blue scale-110"
-                : "text-stone group-hover:text-charcoal"
+                ? "text-[var(--color-brand)] scale-110"
+                : "text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]"
             )}
             aria-hidden="true"
           >
@@ -219,13 +226,20 @@ export function ProfileDropdown({
         {/* Dropdown Menu Content - 12px Card Border Radius */}
         {isOpen && (
           <div
-            className="absolute right-0 top-full mt-2 w-80 p-2.5 bg-white/98 backdrop-blur-md border border-black/[0.08] rounded-[12px] shadow-xl shadow-black/10 z-50 animate-in fade-in zoom-in-95 duration-150 origin-top-right text-xs"
+            className="absolute right-0 top-full mt-2 w-80 p-2.5 bg-[var(--surface-card)] backdrop-blur-md border border-[var(--border-card)] rounded-[12px] shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 origin-top-right text-xs text-[var(--text-primary)]"
           >
             {/* 1. Header User Card - 12px radius */}
-            <div className="p-3 rounded-[12px] bg-paper-warmth border border-black/[0.06] mb-2">
+            <div 
+              onClick={() => {
+                if (onOpenProfileSettings) onOpenProfileSettings();
+                setIsOpen(false);
+              }}
+              className="p-3 rounded-[12px] bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] border border-[var(--border-card)] mb-2 cursor-pointer transition-colors group"
+              title="Click to view full user profile & settings"
+            >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-marigold via-saffron to-amber-600 p-[2px] shrink-0 shadow-xs">
-                  <div className="w-full h-full rounded-full overflow-hidden bg-charcoal flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5945F1] via-[#FD02B0] to-[#CAEB0E] p-[2px] shrink-0 shadow-xs">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-[var(--surface-app)] flex items-center justify-center text-white text-xs font-bold">
                     {data.avatar ? (
                       <img
                         src={data.avatar}
@@ -236,70 +250,70 @@ export function ProfileDropdown({
                         }}
                       />
                     ) : null}
-                    <span className="uppercase font-semibold text-marigold">{initials}</span>
+                    <span className="uppercase font-semibold text-[var(--color-brand-secondary)]">{initials}</span>
                   </div>
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[13px] font-bold text-charcoal tracking-tight truncate">
+                    <span className="text-[13px] font-bold text-[var(--text-primary)] tracking-tight truncate group-hover:text-[var(--color-brand)] transition-colors">
                       {data.name}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded-[4px] bg-sky-tint text-notion-blue text-[10px] font-semibold uppercase tracking-wider shrink-0">
+                    <span className="px-1.5 py-0.5 rounded-[4px] bg-[var(--surface-subtle)] text-[var(--color-brand)] border border-[var(--color-brand)]/20 text-[10px] font-semibold uppercase tracking-wider shrink-0">
                       {getRoleShortBadge(currentRole)}
                     </span>
                   </div>
-                  <div className="text-[11px] text-stone truncate mt-0.5">
+                  <div className="text-[11px] text-[var(--text-secondary)] truncate mt-0.5">
                     {data.email}
                   </div>
                 </div>
               </div>
 
               {/* Company & Region sub-detail */}
-              <div className="mt-2.5 pt-2 border-t border-black/[0.06] flex items-center justify-between text-[11px] text-stone">
+              <div className="mt-2.5 pt-2 border-t border-[var(--border-card)] flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
                 <div className="flex items-center gap-1.5 truncate">
-                  <Building2 className="w-3.5 h-3.5 text-stone shrink-0" />
+                  <Building2 className="w-3.5 h-3.5 text-[var(--text-secondary)] shrink-0" />
                   <span className="truncate">{data.companyName || "Boon Rawd Brewery Co., Ltd."}</span>
                 </div>
-                <div className="flex items-center gap-1 shrink-0 ml-2 text-stone font-mono text-[10px]">
-                  <Globe2 className="w-3 h-3 text-stone" />
+                <div className="flex items-center gap-1 shrink-0 ml-2 text-[var(--text-secondary)] font-mono text-[10px]">
+                  <Globe2 className="w-3 h-3 text-[var(--text-secondary)]" />
                   <span>APAC</span>
                 </div>
               </div>
             </div>
 
             {/* 2. RBAC Persona Switcher - 12px Card Border Radius */}
-            <div className="mb-2 rounded-[12px] border border-black/[0.08] overflow-hidden bg-white">
+            <div className="mb-2 rounded-[12px] border border-[var(--border-card)] overflow-hidden bg-[var(--surface-card)]">
               <button
                 type="button"
                 onClick={() => setIsRolePickerOpen(!isRolePickerOpen)}
-                className="w-full flex items-center justify-between p-2.5 hover:bg-paper-warmth transition-colors cursor-pointer text-left group"
+                className="w-full flex items-center justify-between p-2.5 hover:bg-[var(--surface-hover)] transition-colors cursor-pointer text-left group"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <ShieldCheck className="w-4 h-4 text-notion-blue shrink-0" />
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-brand)] shrink-0" />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[12px] font-semibold text-charcoal truncate">
+                    <span className="text-[12px] font-semibold text-[var(--text-primary)] truncate">
                       Active Role & Access
                     </span>
-                    <span className="text-[10px] text-stone truncate">
+                    <span className="text-[10px] text-[var(--text-secondary)] truncate">
                       Click to switch persona
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                  <span className="text-[11px] font-medium rounded-[8px] py-0.5 px-2 text-notion-blue bg-sky-tint border border-notion-blue/20">
+                  <span className="text-[11px] font-medium rounded-[8px] py-0.5 px-2 text-[var(--color-brand)] bg-[var(--surface-subtle)] border border-[var(--color-brand)]/20">
                     {currentRole.replace('Global ', '').replace('Administrator', 'Admin')}
                   </span>
-                  <ChevronRight className={cn("w-3.5 h-3.5 text-stone transition-transform duration-200", isRolePickerOpen && "rotate-90")} />
+                  <ChevronRight className={cn("w-3.5 h-3.5 text-[var(--text-secondary)] transition-transform duration-200", isRolePickerOpen && "rotate-90")} />
                 </div>
               </button>
 
               {/* Collapsible role selector */}
               {isRolePickerOpen && (
-                <div className="p-1.5 bg-paper-warmth border-t border-black/[0.06] space-y-1">
-                  <div className="px-2 py-1 text-[10px] font-bold text-stone uppercase tracking-wider flex items-center justify-between">
+                <div className="p-1.5 bg-[var(--surface-subtle)] border-t border-[var(--border-card)] space-y-1">
+                  <div className="px-2 py-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between">
                     <span>Switch Role (RBAC)</span>
-                    <span className="text-[9px] font-normal lowercase text-stone">instant update</span>
+                    <span className="text-[9px] font-normal lowercase text-[var(--text-secondary)]">instant update</span>
                   </div>
                   {rolesList.map((r) => {
                     const isActive = currentRole === r.role;
@@ -314,8 +328,8 @@ export function ProfileDropdown({
                         className={cn(
                           "w-full px-2.5 py-1.5 rounded-[8px] cursor-pointer transition-all flex items-start justify-between text-left border",
                           isActive 
-                            ? "bg-sky-tint text-notion-blue border-notion-blue/30 font-medium shadow-xs" 
-                            : "border-transparent text-graphite hover:bg-white hover:border-black/[0.08]"
+                            ? "bg-[var(--surface-card)] text-[var(--color-brand)] border-[var(--color-brand)]/40 font-semibold shadow-xs" 
+                            : "border-transparent text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
                         )}
                       >
                         <div className="min-w-0 pr-2">
@@ -323,14 +337,14 @@ export function ProfileDropdown({
                             <span className="text-[11px] font-semibold truncate leading-snug">{r.role}</span>
                             <span className={cn(
                               "text-[9px] px-1 py-0.2 rounded font-mono uppercase",
-                              isActive ? "bg-sky-wash/30 text-notion-blue" : "bg-black/[0.06] text-stone"
+                              isActive ? "bg-[var(--surface-subtle)] text-[var(--color-brand)]" : "bg-[var(--border-card)] text-[var(--text-secondary)]"
                             )}>
                               {r.badge}
                             </span>
                           </div>
-                          <div className="text-[10px] text-stone leading-tight mt-0.5 line-clamp-1">{r.desc}</div>
+                          <div className="text-[10px] text-[var(--text-secondary)] leading-tight mt-0.5 line-clamp-1">{r.desc}</div>
                         </div>
-                        {isActive && <Check className="w-3.5 h-3.5 text-notion-blue shrink-0 mt-0.5" />}
+                        {isActive && <Check className="w-3.5 h-3.5 text-[var(--color-brand)] shrink-0 mt-0.5" />}
                       </button>
                     );
                   })}
@@ -340,57 +354,90 @@ export function ProfileDropdown({
 
             {/* 3. Platform Intelligence & Storage Status - 12px Card Border Radius */}
             <div className="space-y-1.5 mb-2">
-              {/* Visual AI Engine */}
-              <div className="flex items-center justify-between p-2 rounded-[12px] bg-paper-warmth border border-black/[0.06]">
+              {/* Visual AI Engine (Clickable -> Opens AI Lab) */}
+              <div 
+                onClick={() => {
+                  if (onOpenAiLab) onOpenAiLab();
+                  setIsOpen(false);
+                }}
+                className="flex items-center justify-between p-2 rounded-[12px] bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] border border-[var(--border-card)] cursor-pointer transition-colors group"
+                title="Open AI Recognition Lab"
+              >
                 <div className="flex items-center gap-2 min-w-0">
                   <Gemini className="w-4 h-4 shrink-0" />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[11px] font-semibold text-charcoal truncate">
+                    <span className="text-[11px] font-semibold text-[var(--text-primary)] group-hover:text-[var(--color-brand)] truncate transition-colors">
                       Visual AI Intelligence
                     </span>
-                    <span className="text-[10px] text-stone truncate">
+                    <span className="text-[10px] text-[var(--text-secondary)] truncate">
                       Multimodal Auto-tagging & Semantic Index
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-semibold rounded-[4px] py-0.5 px-1.5 text-notion-blue bg-sky-tint border border-notion-blue/20 shrink-0">
-                  {data.model || "Gemini 2.5 Flash"}
-                </span>
+                <div className="flex items-center gap-1 shrink-0">
+                  <span className="text-[10px] font-semibold rounded-[4px] py-0.5 px-1.5 text-[var(--color-brand)] bg-[var(--surface-card)] border border-[var(--color-brand)]/20">
+                    {data.model || "Gemini 2.5 Flash"}
+                  </span>
+                  <ChevronRight className="w-3 h-3 text-[var(--text-secondary)] group-hover:text-[var(--color-brand)] transition-colors" />
+                </div>
               </div>
 
-              {/* Storage Vault Quota */}
-              <div className="p-2 rounded-[12px] bg-paper-warmth border border-black/[0.06] space-y-1.5">
+              {/* Storage Vault Quota (Clickable -> Opens Analytics) */}
+              <div 
+                onClick={() => {
+                  if (onOpenAnalytics) onOpenAnalytics();
+                  setIsOpen(false);
+                }}
+                className="p-2 rounded-[12px] bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] border border-[var(--border-card)] space-y-1.5 cursor-pointer transition-colors group"
+                title="Open Consumption Analytics & Quotas"
+              >
                 <div className="flex items-center justify-between text-[11px]">
-                  <div className="flex items-center gap-1.5 text-graphite font-medium">
-                    <HardDrive className="w-3.5 h-3.5 text-stone" />
+                  <div className="flex items-center gap-1.5 text-[var(--text-primary)] font-medium group-hover:text-[var(--color-brand)] transition-colors">
+                    <HardDrive className="w-3.5 h-3.5 text-[var(--text-secondary)] group-hover:text-[var(--color-brand)] transition-colors" />
                     <span>DAM Storage Vault</span>
                   </div>
-                  <span className="font-mono text-[10px] text-stone">
-                    {data.usedStorage || "14.2 GB"} / {data.totalStorage || "50 GB"}
-                  </span>
+                  <div className="flex items-center gap-1 font-mono text-[10px] text-[var(--text-secondary)]">
+                    <span>{data.usedStorage || "14.2 GB"} / {data.totalStorage || "50 GB"}</span>
+                    <ChevronRight className="w-3 h-3 text-[var(--text-secondary)] group-hover:text-[var(--color-brand)] transition-colors" />
+                  </div>
                 </div>
                 {/* Progress Bar */}
-                <div className="w-full h-1.5 bg-black/[0.08] rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-notion-blue to-signal-blue rounded-full" style={{ width: '28.4%' }} />
+                <div className="w-full h-1.5 bg-[var(--border-card)] rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-[var(--color-brand)] to-[var(--color-brand-secondary)] rounded-full" style={{ width: '28.4%' }} />
                 </div>
               </div>
             </div>
 
             {/* 4. Navigation Shortcuts - 8px Button Radius */}
-            <div className="space-y-0.5 border-t border-black/[0.06] pt-1.5">
+            <div className="space-y-0.5 border-t border-[var(--border-card)] pt-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  onOpenProfileSettings?.();
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-[var(--surface-hover)] hover:text-[var(--color-brand)] transition-colors cursor-pointer text-left text-[var(--text-secondary)]"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Building2 className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+                  <span className="text-[12px] font-medium">Platform Settings & Quotas</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
                   onOpenSettings?.();
                   setIsOpen(false);
                 }}
-                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-sky-tint hover:text-notion-blue transition-colors cursor-pointer text-left text-graphite"
+                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-[var(--surface-hover)] hover:text-[var(--color-brand)] transition-colors cursor-pointer text-left text-[var(--text-secondary)]"
               >
                 <div className="flex items-center gap-2.5">
-                  <Shield className="w-3.5 h-3.5 text-stone" />
+                  <Shield className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
                   <span className="text-[12px] font-medium">Global Governance & Matrix</span>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-stone" />
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
               </button>
 
               <button
@@ -399,13 +446,13 @@ export function ProfileDropdown({
                   onOpenGuidelines?.();
                   setIsOpen(false);
                 }}
-                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-sky-tint hover:text-notion-blue transition-colors cursor-pointer text-left text-graphite"
+                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-[var(--surface-hover)] hover:text-[var(--color-brand)] transition-colors cursor-pointer text-left text-[var(--text-secondary)]"
               >
                 <div className="flex items-center gap-2.5">
-                  <FileText className="w-3.5 h-3.5 text-stone" />
+                  <FileText className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
                   <span className="text-[12px] font-medium">Brand Guidelines & Policies</span>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-stone" />
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
               </button>
 
               <button
@@ -414,13 +461,13 @@ export function ProfileDropdown({
                   onOpenShares?.();
                   setIsOpen(false);
                 }}
-                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-sky-tint hover:text-notion-blue transition-colors cursor-pointer text-left text-graphite"
+                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-[var(--surface-hover)] hover:text-[var(--color-brand)] transition-colors cursor-pointer text-left text-[var(--text-secondary)]"
               >
                 <div className="flex items-center gap-2.5">
-                  <Share2 className="w-3.5 h-3.5 text-stone" />
+                  <Share2 className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
                   <span className="text-[12px] font-medium">Shared Links Vault</span>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-stone" />
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
               </button>
 
               <button
@@ -429,18 +476,18 @@ export function ProfileDropdown({
                   onOpenAuth?.();
                   setIsOpen(false);
                 }}
-                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-sky-tint hover:text-notion-blue transition-colors cursor-pointer text-left text-graphite"
+                className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-[var(--surface-hover)] hover:text-[var(--color-brand)] transition-colors cursor-pointer text-left text-[var(--text-secondary)]"
               >
                 <div className="flex items-center gap-2.5">
-                  <KeyRound className="w-3.5 h-3.5 text-stone" />
+                  <KeyRound className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
                   <span className="text-[12px] font-medium">Account Credentials & Wizard</span>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-stone" />
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
               </button>
             </div>
 
             {/* 5. Separator & Sign Out */}
-            <div className="my-1.5 border-t border-black/[0.06]" />
+            <div className="my-1.5 border-t border-[var(--border-card)]" />
 
             <button
               type="button"
@@ -448,9 +495,9 @@ export function ProfileDropdown({
                 onSignOut?.();
                 setIsOpen(false);
               }}
-              className="w-full flex items-center gap-2 p-2 rounded-[8px] text-coral hover:bg-coral/10 transition-colors cursor-pointer text-left font-medium"
+              className="w-full flex items-center gap-2 p-2 rounded-[8px] text-[#E53535] hover:bg-[#E53535]/10 transition-colors cursor-pointer text-left font-medium"
             >
-              <LogOut className="w-3.5 h-3.5 text-coral" />
+              <LogOut className="w-3.5 h-3.5 text-[#E53535]" />
               <span className="text-[12px]">Switch Account / Sign Out</span>
             </button>
           </div>

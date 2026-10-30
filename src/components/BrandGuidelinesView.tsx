@@ -11,8 +11,12 @@ import {
   Type, 
   Palette, 
   Info,
-  ExternalLink
+  ExternalLink,
+  Crown,
+  FileText,
+  Bookmark
 } from 'lucide-react';
+import { BentoGrid, BentoCard } from './ui/bento-grid';
 
 interface BrandGuidelinesViewProps {
   onOpenPdf: () => void;
@@ -114,8 +118,117 @@ export const BrandGuidelinesView: React.FC<BrandGuidelinesViewProps> = ({
         </div>
       )}
 
+      {/* Brand Identity Pillars BentoGrid */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-charcoal font-heading">
+            Brand Identity System Bento Overview
+          </span>
+          <span className="text-[11px] text-stone font-mono">
+            Click any Bento module to inspect design specifications
+          </span>
+        </div>
+
+        <BentoGrid className="lg:grid-cols-3">
+          <BentoCard
+            name="01. Master Logo & Mythical Lion"
+            description="The core Singha emblem crafted since 1933 representing royal craftsmanship and prestige."
+            badge="Basic Design · Sec 1"
+            Icon={Crown}
+            className={section === 'master' ? 'border-notion-blue ring-2 ring-notion-blue/20 shadow-md' : ''}
+            background={
+              <div className="w-full h-full bg-paper-warmth flex items-center justify-center p-6 opacity-30 group-hover:scale-105 transition-all">
+                <span className="text-6xl text-amber-500">🦁</span>
+              </div>
+            }
+            cta="Inspect Master Logo"
+            onClick={() => handleSelectSection('master')}
+          />
+
+          <BentoCard
+            name="02. Dark Market Vector Compliance"
+            description="Special legal mark for countries with strict alcohol advertising prohibitions."
+            badge="Legal Protocol · Sec 2"
+            Icon={ShieldAlert}
+            className={section === 'dark' ? 'border-notion-blue ring-2 ring-notion-blue/20 shadow-md' : ''}
+            background={
+              <div className="w-full h-full bg-amber-400 flex items-center justify-center p-6 opacity-25 group-hover:scale-105 transition-all">
+                <div className="w-24 h-24 rounded-full border-4 border-black flex items-center justify-center font-bold text-black text-2xl font-mono">
+                  1933
+                </div>
+              </div>
+            }
+            cta="Inspect Dark Market Rules"
+            onClick={() => handleSelectSection('dark')}
+          />
+
+          <BentoCard
+            name="03. ESTD 1933 Secondary Mark"
+            description="Mandatory 12-degree heritage slope mark used on premium glassware, coasters, and packaging."
+            badge="Brand Assets · Sec 3"
+            Icon={Bookmark}
+            className={section === 'secondary' ? 'border-notion-blue ring-2 ring-notion-blue/20 shadow-md' : ''}
+            background={
+              <div className="w-full h-full bg-sky-tint flex items-center justify-center p-6 opacity-30 group-hover:scale-105 transition-all">
+                <span className="text-4xl font-black text-notion-blue rotate-12">ESTD 1933</span>
+              </div>
+            }
+            cta="Inspect 1933 Mark"
+            onClick={() => handleSelectSection('secondary')}
+          />
+
+          <BentoCard
+            name="04. Color System & Pantone"
+            description="Official color formulas including Singha Gold (Pantone 123 C), Lion Blue, and Indochina White."
+            badge="Palette Specs · Sec 4"
+            Icon={Palette}
+            className={section === 'color' ? 'border-notion-blue ring-2 ring-notion-blue/20 shadow-md' : ''}
+            background={
+              <div className="w-full h-full grid grid-cols-2 p-4 gap-1 opacity-30 group-hover:scale-105 transition-all">
+                <div className="bg-[#ffb110] rounded-xs" />
+                <div className="bg-[#0075de] rounded-xs" />
+                <div className="bg-[#111111] rounded-xs" />
+                <div className="bg-[#f6f5f4] rounded-xs" />
+              </div>
+            }
+            cta="Inspect Color Formulas"
+            onClick={() => handleSelectSection('color')}
+          />
+
+          <BentoCard
+            name="05. Typography Hierarchy"
+            description="Korolev Display for international packaging and DB Helvethaica for Indochina commercial print."
+            badge="Type System · Sec 5"
+            Icon={Type}
+            className={section === 'font' ? 'border-notion-blue ring-2 ring-notion-blue/20 shadow-md' : ''}
+            background={
+              <div className="w-full h-full bg-paper-warmth flex items-center justify-center p-6 opacity-30 group-hover:scale-105 transition-all">
+                <span className="text-5xl font-black text-charcoal">Aa Bb Gg</span>
+              </div>
+            }
+            cta="Inspect Typography"
+            onClick={() => handleSelectSection('font')}
+          />
+
+          <BentoCard
+            name="06. Official Handbook (PDF)"
+            description="Download the full 22-page certified brand manual published by Boon Rawd Brewery global HQ."
+            badge="Master PDF · Sec 6"
+            Icon={FileText}
+            className={section === 'intro' ? 'border-notion-blue ring-2 ring-notion-blue/20 shadow-md' : ''}
+            background={
+              <div className="w-full h-full bg-paper-warmth flex items-center justify-center p-6 opacity-30 group-hover:scale-105 transition-all">
+                <span className="text-4xl text-charcoal">📖</span>
+              </div>
+            }
+            cta="View Handbook PDF"
+            onClick={onOpenPdf}
+          />
+        </BentoGrid>
+      </div>
+
       {/* Horizontal Guideline Sub-nav */}
-      <div className="flex items-center gap-1 overflow-x-auto p-1 bg-white border border-[rgba(0,0,0,0.08)] rounded-[8px]">
+      <div className="flex items-center gap-1 overflow-x-auto p-1 bg-white border border-black/[0.08] rounded-[8px]">
         {[
           { id: 'master', label: '01. Master Logo' },
           { id: 'dark', label: '02. Dark Market Logo' },
@@ -129,8 +242,8 @@ export const BrandGuidelinesView: React.FC<BrandGuidelinesViewProps> = ({
             onClick={() => handleSelectSection(item.id as any)}
             className={`px-3 py-1.5 text-xs font-medium rounded-[8px] whitespace-nowrap transition-colors cursor-pointer ${
               section === item.id
-                ? 'bg-[#e6f3fe] text-[#0075de] font-semibold'
-                : 'text-[#757575] hover:text-black hover:bg-[rgba(0,0,0,0.04)]'
+                ? 'bg-sky-tint text-notion-blue font-semibold shadow-xs'
+                : 'text-stone hover:text-charcoal hover:bg-black/5'
             }`}
           >
             {item.label}

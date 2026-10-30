@@ -1,61 +1,124 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-notion-blue: #0075de;
-  --color-paper-warmth: #f6f5f4;
-  --color-pure-white: #ffffff;
-  --color-ink-black: #000000;
-  --color-charcoal: #111111;
-  --color-stone: #757575;
-  --color-graphite: #615d59;
-  --color-slate: #696969;
-  --color-sky-tint: #e6f3fe;
-  --color-marigold: #ffb110;
-  --color-coral: #f64932;
-  --color-saffron: #e89d01;
-  --color-vermillion: #e32d14;
-  --color-mocha: #b18164;
-  --color-signal-blue: #097fe8;
-  --color-sky-wash: #62aef0;
-  --color-midnight-ink: #02093a;
+  /* Primitive Brand Palette from Figma Tokens */
+  --color-prime-0: #FFFFFF;
+  --color-prime-10: #FBFBFF;
+  --color-prime-20: #F7F5FF;
+  --color-prime-50: #F0F3F7;
+  --color-prime-100: #ECEEFA;
+  --color-prime-200: #CCC6FB;
+  --color-prime-300: #ABA1F8;
+  --color-prime-400: #8A7AF6;
+  --color-prime-500: #5945F1;
+  --color-prime-600: #492CED;
+  --color-prime-700: #3410D5;
+  --color-prime-800: #230EBF;
+  --color-prime-900: #230674;
+  --color-prime-950: #170345;
+  --color-prime-1000: #090119;
+
+  --color-secon-400: #DCF73B;
+  --color-secon-500: #CAEB0E;
+  --color-secon-600: #A9C40B;
+  --color-secon-700: #879E07;
+
+  --color-tert-400: #FD35C2;
+  --color-tert-500: #FD02B0;
+  --color-tert-600: #DE039D;
+
+  --color-silver-100: #F1F5F9;
+  --color-silver-200: #E2E8F0;
+  --color-silver-700: #334155;
+  --color-silver-800: #1E293B;
+  --color-silver-900: #0F172A;
+
+  /* Backward compatible aliases aligned with design system */
+  --color-notion-blue: var(--color-brand);
+  --color-paper-warmth: var(--surface-subtle);
+  --color-pure-white: var(--surface-card);
+  --color-charcoal: var(--text-primary);
+  --color-stone: var(--text-secondary);
+  --color-graphite: var(--text-muted);
+  --color-sky-tint: var(--surface-subtle);
+  --color-marigold: var(--color-brand-secondary);
+  --color-coral: #E03434;
+  --color-saffron: #CAEB0E;
 
   --radius-cards: 12px;
   --radius-buttons: 8px;
   --radius-pills: 9999px;
+
+  /* Typography Design Tokens */
+  --font-heading: 'Bricolage Grotesque', sans-serif;
+  --font-sans: 'Geist Sans', 'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-subheading: 'Geist Sans', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 :root {
-  --color-notion-blue: #0075de;
-  --color-paper-warmth: #f6f5f4;
-  --color-pure-white: #ffffff;
-  --color-ink-black: #000000;
-  --color-charcoal: #111111;
-  --color-stone: #757575;
-  --color-graphite: #615d59;
-  --color-slate: #696969;
-  --color-sky-tint: #e6f3fe;
-  --color-marigold: #ffb110;
-  --color-coral: #f64932;
-  --color-saffron: #e89d01;
-  --color-vermillion: #e32d14;
-  --color-mocha: #b18164;
-  --color-signal-blue: #097fe8;
-  --color-sky-wash: #62aef0;
-  --color-midnight-ink: #02093a;
+  /* Semantic Tokens - Light Mode (from figmaTokens.semantic.light) */
+  --surface-app: #FBFBFF;
+  --surface-card: #FFFFFF;
+  --surface-subtle: #ECEEFA;
+  --surface-hover: #F7F5FF;
+  --surface-tint: #F0F3F7;
+  --border-default: #CCC6FB;
+  --border-card: #ECEEFA;
+  --border-subtle: #E2E8F0;
+  --text-primary: #171717;
+  --text-secondary: #737373;
+  --text-muted: #A1A1A1;
+  --color-brand: #5945F1;
+  --color-brand-secondary: #CAEB0E;
+  --color-brand-tertiary: #FD02B0;
+}
+
+.dark, [data-theme="dark"] {
+  /* Semantic Tokens - Dark Mode (from figmaTokens.semantic.dark) */
+  --surface-app: #090119;
+  --surface-card: #170345;
+  --surface-subtle: #230674;
+  --surface-hover: #2E0AA3;
+  --surface-tint: #170345;
+  --border-default: #3410D5;
+  --border-card: #230674;
+  --border-subtle: #1E293B;
+  --text-primary: #FFFFFF;
+  --text-secondary: #CCC6FB;
+  --text-muted: #8A7AF6;
+  --color-brand: #ABA1F8;
+  --color-brand-secondary: #DCF73B;
+  --color-brand-tertiary: #FD5DCE;
 }
 
 body {
-  font-family: 'DM Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #1a1918;
-  background-color: #faf9f6;
+  font-family: 'Geist Sans', 'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-primary);
+  background-color: var(--surface-app);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: -0.015em;
+/* Header: Bricolage Grotesque */
+h1, h2, h3, .font-heading, .font-header, .font-title {
+  font-family: 'Bricolage Grotesque', sans-serif !important;
+  letter-spacing: -0.025em;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Sub-header: Geist */
+h4, h5, h6, .font-subheader, .subheading, .font-subhead {
+  font-family: 'Geist Sans', 'Geist', ui-sans-serif, system-ui, sans-serif !important;
+  letter-spacing: -0.01em;
+}
+
+/* Paragraphs & Text: Geist */
+p, span, div, a, button, input, textarea, select, label, .font-sans, .font-body {
+  font-family: 'Geist Sans', 'Geist', ui-sans-serif, system-ui, sans-serif;
 }
 
 .font-serif-editorial {
@@ -66,15 +129,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   font-variant-numeric: tabular-nums;
 }
 
-/* Notion-style hairline borders and 12px card corners */
+/* Figma Token Card styles */
 .notion-card {
-  background-color: #ffffff;
+  background-color: var(--surface-card);
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-card);
 }
 
 .notion-btn-primary {
-  background-color: #0075de;
+  background-color: var(--color-brand);
   color: #ffffff;
   border-radius: 8px;
   padding: 6px 15px;
@@ -83,12 +146,12 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   transition: all 0.15s ease;
 }
 .notion-btn-primary:hover {
-  background-color: #0060b8;
+  filter: brightness(1.1);
 }
 
 .notion-btn-ghost {
-  background-color: #e6f3fe;
-  color: #0075de;
+  background-color: var(--surface-subtle);
+  color: var(--color-brand);
   border-radius: 8px;
   padding: 6px 15px;
   font-weight: 500;
@@ -96,7 +159,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   transition: all 0.15s ease;
 }
 .notion-btn-ghost:hover {
-  background-color: #d6eafc;
+  background-color: var(--surface-hover);
 }
 
 /* Custom scrollbars */
@@ -108,9 +171,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(138, 122, 246, 0.2);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(138, 122, 246, 0.4);
 }
+

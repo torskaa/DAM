@@ -130,20 +130,20 @@ export const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="relative bg-white w-full max-w-5xl max-h-[92vh] rounded-[12px] shadow-2xl flex flex-col overflow-hidden border border-black/[0.08]"
+        className="relative bg-[var(--surface-card)] text-[var(--text-primary)] w-full max-w-5xl max-h-[92vh] rounded-[12px] shadow-2xl flex flex-col overflow-hidden border border-[var(--border-card)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.08] bg-paper-warmth">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-card)] bg-[var(--surface-subtle)]">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-neutral-200 text-neutral-800">
+            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[var(--surface-card)] text-[var(--text-primary)] border border-[var(--border-card)]">
               .{asset.fileFormat}
             </span>
             <div className="min-w-0">
-              <h2 className="text-sm font-bold text-neutral-900 truncate" title={asset.title}>
+              <h2 className="text-sm font-bold text-[var(--text-primary)] truncate font-['Bricolage_Grotesque',sans-serif]" title={asset.title}>
                 {asset.title}
               </h2>
-              <p className="text-[11px] text-neutral-600 font-mono truncate">
+              <p className="text-[11px] text-[var(--text-secondary)] font-mono truncate font-['Geist',sans-serif]">
                 {asset.filename} · Brand: {asset.brand}
               </p>
             </div>
@@ -343,18 +343,18 @@ export const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
           </div>
 
           {/* Right Inspector Tabs */}
-          <div className="lg:w-5/12 flex flex-col bg-white border-l border-black/[0.08]">
+          <div className="lg:w-5/12 flex flex-col bg-[var(--surface-card)] border-l border-[var(--border-card)]">
             {/* Tab Navigation */}
-            <div className="flex items-center border-b border-black/[0.08] px-4 text-xs font-semibold overflow-x-auto">
+            <div className="flex items-center border-b border-[var(--border-card)] px-4 text-xs font-semibold overflow-x-auto bg-[var(--surface-subtle)]">
               <button
                 onClick={() => setActiveTab('ai')}
                 className={`py-3 px-2.5 flex items-center gap-1.5 border-b-2 whitespace-nowrap transition-colors cursor-pointer ${
                   activeTab === 'ai'
-                    ? 'border-notion-blue text-charcoal font-bold'
-                    : 'border-transparent text-stone hover:text-charcoal'
+                    ? 'border-[var(--color-brand)] text-[var(--color-brand)] font-bold'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>AI Insights</span>
               </button>
 
@@ -362,11 +362,11 @@ export const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
                 onClick={() => setActiveTab('rights')}
                 className={`py-3 px-2.5 flex items-center gap-1.5 border-b-2 whitespace-nowrap transition-colors cursor-pointer ${
                   activeTab === 'rights'
-                    ? 'border-notion-blue text-charcoal font-bold'
-                    : 'border-transparent text-stone hover:text-charcoal'
+                    ? 'border-[var(--color-brand)] text-[var(--color-brand)] font-bold'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-notion-blue" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[var(--color-brand)]" />
                 <span>Rights & DRM</span>
               </button>
 
@@ -374,8 +374,8 @@ export const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
                 onClick={() => setActiveTab('crop')}
                 className={`py-3 px-2.5 flex items-center gap-1.5 border-b-2 whitespace-nowrap transition-colors cursor-pointer ${
                   activeTab === 'crop'
-                    ? 'border-notion-blue text-charcoal font-bold'
-                    : 'border-transparent text-stone hover:text-charcoal'
+                    ? 'border-[var(--color-brand)] text-[var(--color-brand)] font-bold'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <Download className="w-3.5 h-3.5" />
@@ -386,8 +386,8 @@ export const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
                 onClick={() => setActiveTab('specs')}
                 className={`py-3 px-2.5 flex items-center gap-1.5 border-b-2 whitespace-nowrap transition-colors cursor-pointer ${
                   activeTab === 'specs'
-                    ? 'border-notion-blue text-charcoal font-bold'
-                    : 'border-transparent text-stone hover:text-charcoal'
+                    ? 'border-[var(--color-brand)] text-[var(--color-brand)] font-bold'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <FileCode className="w-3.5 h-3.5" />
@@ -398,8 +398,8 @@ export const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
                 onClick={() => setActiveTab('versions')}
                 className={`py-3 px-2.5 flex items-center gap-1.5 border-b-2 whitespace-nowrap transition-colors cursor-pointer ${
                   activeTab === 'versions'
-                    ? 'border-notion-blue text-charcoal font-bold'
-                    : 'border-transparent text-stone hover:text-charcoal'
+                    ? 'border-[var(--color-brand)] text-[var(--color-brand)] font-bold'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <Clock className="w-3.5 h-3.5" />
@@ -410,8 +410,8 @@ export const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
                 onClick={() => setActiveTab('comments')}
                 className={`py-3 px-2.5 flex items-center gap-1.5 border-b-2 whitespace-nowrap transition-colors cursor-pointer ${
                   activeTab === 'comments'
-                    ? 'border-notion-blue text-charcoal font-bold'
-                    : 'border-transparent text-stone hover:text-charcoal'
+                    ? 'border-[var(--color-brand)] text-[var(--color-brand)] font-bold'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <MessageSquare className="w-3.5 h-3.5" />

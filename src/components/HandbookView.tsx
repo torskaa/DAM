@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Download, BookOpen, Send, Check, MessageSquare, ExternalLink } from 'lucide-react';
+import { Download, BookOpen, Send, Check, MessageSquare, ExternalLink, ShieldCheck } from 'lucide-react';
+import { BentoGrid, BentoCard } from './ui/bento-grid';
+import {
+  FileTextIcon,
+  GlobeIcon,
+  ReaderIcon,
+  DownloadIcon,
+  ChatBubbleIcon
+} from '@radix-ui/react-icons';
 
 export const HandbookView: React.FC = () => {
   const [showContactModal, setShowContactModal] = useState(false);
@@ -21,109 +29,131 @@ export const HandbookView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 text-center space-y-8">
-      {/* Title */}
-      <div>
-        <span className="notion-pill bg-[#ffb110] text-black">
-          Official Documentation
-        </span>
-        <h1 className="text-3xl font-bold text-black tracking-tight mt-3">
-          Singha Brand World Handbook
-        </h1>
-        <p className="text-sm text-[#615d59] mt-2 max-w-lg mx-auto font-['Lyon_Text',Georgia,serif]">
-          The complete 22-page master brand identity design guide for Boon Rawd Brewery global operations, agencies, and licensed partners.
-        </p>
-      </div>
-
-      {/* Book Presentation */}
-      <div className="flex flex-col items-center justify-center">
-        {/* Yellow Book Cover Representation */}
-        <div className="w-56 h-76 bg-[#ffb110] rounded-r-[12px] rounded-l-[4px] p-6 flex flex-col items-center justify-between border-l-4 border-[#e89d01] relative group transition-transform duration-200 hover:scale-102">
-          <div className="w-full flex justify-end">
-            <span className="text-[10px] font-mono font-medium tracking-widest text-black/60">
-              2018–2026
+    <div className="space-y-6">
+      {/* Top Banner */}
+      <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-[12px] p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-black">
+              Singha Brand World Handbook
+            </h1>
+            <span className="notion-pill bg-[#ffb110] text-black">
+              Official Master PDF
             </span>
           </div>
-
-          <div className="text-center space-y-2">
-            <div className="text-5xl text-black">🦁</div>
-            <h3 className="text-lg font-bold text-black tracking-wider">
-              SINGHA
-            </h3>
-            <div className="h-0.5 w-12 bg-black mx-auto" />
-            <p className="text-xs font-bold tracking-widest text-black uppercase">
-              HANDBOOK
-            </p>
-          </div>
-
-          <div className="text-[9px] font-mono tracking-widest text-black/80 font-medium">
-            BOON RAWD BREWERY CO., LTD.
-          </div>
+          <p className="text-sm text-[#615d59] mt-1 max-w-2xl font-['Lyon_Text',Georgia,serif]">
+            The complete 22-page master brand identity design guide for Boon Rawd Brewery global operations, agencies, and licensed partners.
+          </p>
         </div>
 
-        {/* Action Buttons (Download & Contact) */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           <a
             href={pdfUrl}
             download="SINGHA-brandworld-design-05032018.pdf"
             className="notion-btn-primary flex items-center gap-2"
           >
             <Download className="w-4 h-4 stroke-[2.5]" />
-            <span>Download Master Handbook (15.1 MB)</span>
+            <span>Download PDF (15.1 MB)</span>
           </a>
-
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="notion-btn-ghost flex items-center gap-2"
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>Read PDF in Browser</span>
-          </a>
-
           <button
             onClick={() => setShowContactModal(true)}
-            className="px-3.5 py-1.5 border border-[rgba(0,0,0,0.15)] text-black hover:bg-[rgba(0,0,0,0.04)] rounded-[8px] font-medium text-xs flex items-center gap-2 transition-colors cursor-pointer"
+            className="notion-btn-ghost flex items-center gap-2"
           >
             <MessageSquare className="w-4 h-4" />
-            <span>Feedback & Enquiries</span>
+            <span>Enquiries</span>
           </button>
         </div>
       </div>
 
-      {/* Chapters Summary */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-6 text-left shadow-xs mt-8">
-        <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wider mb-4">
-          Handbook Table of Contents (22 Pages)
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <div className="p-3 rounded-lg bg-neutral-50 border border-neutral-100">
-            <span className="font-bold text-neutral-900">Pages 01–09: User Account & Roles</span>
-            <p className="text-[11px] text-neutral-600 mt-0.5">
-              Role request workflow for Downloaders, Creators, and Regional Country Admins.
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-neutral-50 border border-neutral-100">
-            <span className="font-bold text-neutral-900">Page 10: Brand World Switcher</span>
-            <p className="text-[11px] text-neutral-600 mt-0.5">
-              Portfolio selection for Singha, Leo, and U Beer identity libraries.
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-neutral-50 border border-neutral-100">
-            <span className="font-bold text-neutral-900">Pages 11–14: Master & Dark Market Logos</span>
-            <p className="text-[11px] text-neutral-600 mt-0.5">
-              Symbol clear spaces, minimum sizes, alcohol advertising legislation compliance.
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-neutral-50 border border-neutral-100">
-            <span className="font-bold text-neutral-900">Pages 15–22: Color, Font & Asset Grid</span>
-            <p className="text-[11px] text-neutral-600 mt-0.5">
-              Pantone 3559 C & 7408 C breakdown, Korolev typography, and assets download portal.
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Bento Grid */}
+      <BentoGrid className="lg:auto-rows-[18rem]">
+        {/* Card 1: Master Yellow Book (Span 2) */}
+        <BentoCard
+          name="Official Singha Handbook Edition"
+          description="High-resolution 22-page vector guide containing official color formulas, typography rules, clearspace geometry, and packaging guidelines."
+          Icon={ReaderIcon}
+          className="lg:col-span-2 bg-gradient-to-br from-[#fffdfa] via-white to-[#ffb110]/15"
+          badge="15.1 MB PDF"
+          background={
+            <div className="absolute right-6 top-6 flex items-center gap-4 opacity-85">
+              <div className="w-24 h-32 bg-[#ffb110] rounded-r-lg rounded-l-xs p-3 flex flex-col justify-between border-l-2 border-[#e89d01] shadow-md transform rotate-3">
+                <span className="text-[8px] font-mono text-black/60 text-right">2018–2026</span>
+                <div className="text-center font-bold text-black text-xs">
+                  <div>🦁</div>
+                  <div className="text-[10px] tracking-widest mt-1">SINGHA</div>
+                </div>
+                <span className="text-[7px] font-mono text-black/70">BOON RAWD</span>
+              </div>
+            </div>
+          }
+          href={pdfUrl}
+          cta="Download Master Handbook"
+        />
+
+        {/* Card 2: User Account & Roles (Span 1) */}
+        <BentoCard
+          name="Pages 01–09: User Account & Roles"
+          description="Role request workflows for Downloaders, Creators, and Regional Country Admins with verification protocols."
+          Icon={FileTextIcon}
+          className="lg:col-span-1"
+          badge="Governance"
+          background={
+            <div className="absolute right-4 bottom-12 p-2 rounded-lg bg-black/5 text-[10px] font-mono text-[#615d59]">
+              Regional Approvals: 24h
+            </div>
+          }
+          href={pdfUrl}
+          cta="Read Pages 01-09"
+        />
+
+        {/* Card 3: Brand World Switcher (Span 1) */}
+        <BentoCard
+          name="Page 10: Brand World Switcher"
+          description="Portfolio partition protocols across Singha, Leo, and U Beer corporate identity systems."
+          Icon={GlobeIcon}
+          className="lg:col-span-1"
+          badge="Multi-Brand"
+          background={
+            <div className="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-[#0075de]/10 blur-xl" />
+          }
+          href={pdfUrl}
+          cta="Read Page 10"
+        />
+
+        {/* Card 4: Master & Dark Market Logos (Span 1) */}
+        <BentoCard
+          name="Pages 11–14: Advertising Compliance"
+          description="Legal clear space, minimum print thresholds, and dark market alcohol legislation compliance matrices."
+          Icon={ShieldCheck}
+          className="lg:col-span-1"
+          badge="Dark Market SOP"
+          background={
+            <div className="absolute right-4 top-4 text-xs font-mono px-2 py-1 rounded bg-black text-[#ffb110]">
+              Zero-Alcohol Rules
+            </div>
+          }
+          href={pdfUrl}
+          cta="Read Pages 11-14"
+        />
+
+        {/* Card 5: Color, Font & Downloads (Span 1) */}
+        <BentoCard
+          name="Pages 15–22: Color, Font & Grids"
+          description="Pantone 3559 C & 7408 C breakdown, Korolev typographic hierarchy, and master asset resolution specs."
+          Icon={DownloadIcon}
+          className="lg:col-span-1"
+          badge="Color Specs"
+          background={
+            <div className="absolute right-4 top-4 flex gap-1">
+              <span className="w-4 h-4 rounded-full bg-[#ffb110] border border-black/10" />
+              <span className="w-4 h-4 rounded-full bg-[#0075de] border border-black/10" />
+              <span className="w-4 h-4 rounded-full bg-black border border-black/10" />
+            </div>
+          }
+          href={pdfUrl}
+          cta="Read Pages 15-22"
+        />
+      </BentoGrid>
 
       {/* Contact Form Modal (PDF Page 21) */}
       {showContactModal && (

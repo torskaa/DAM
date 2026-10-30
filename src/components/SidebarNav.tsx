@@ -58,6 +58,7 @@ export function WorkspaceSwitcher({
   role,
 }: WorkspaceSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const workspaces = [
     { name: 'Singha Corporation (Global HQ)', plan: 'Enterprise Custodian', brand: 'ALL' as const },
@@ -71,29 +72,29 @@ export function WorkspaceSwitcher({
     <div className="relative">
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between px-2.5 py-2 mb-3 rounded-[8px] hover:bg-paper-warmth cursor-pointer transition-colors select-none group border border-black/[0.08] bg-white"
+        className="flex items-center justify-between px-2.5 py-2 mb-3 rounded-[8px] hover:bg-[var(--surface-hover)] cursor-pointer transition-colors select-none group border border-[var(--border-card)] bg-[var(--surface-card)]"
       >
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-[8px] bg-sky-tint text-notion-blue flex items-center justify-center font-bold text-[14px] shadow-xs shrink-0">
+          <div className="w-8 h-8 rounded-[8px] bg-[var(--surface-subtle)] text-[var(--color-brand)] flex items-center justify-center font-bold text-[14px] shadow-xs shrink-0">
             🦁
           </div>
           <div className="flex flex-col overflow-hidden min-w-0">
-            <span className="text-[13px] font-semibold leading-tight text-charcoal truncate max-w-[145px]">
+            <span className="text-[13px] font-semibold leading-tight text-[var(--text-primary)] truncate max-w-[145px]">
               {selectedWorkspace}
             </span>
-            <span className="text-[11px] text-stone leading-tight truncate">
+            <span className="text-[11px] text-[var(--text-secondary)] leading-tight truncate">
               {role}
             </span>
           </div>
         </div>
-        <ChevronDown className="w-4 h-4 text-stone group-hover:text-charcoal transition-colors shrink-0" strokeWidth={1.5} />
+        <ChevronDown className="w-4 h-4 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors shrink-0" strokeWidth={1.5} />
       </div>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-[52px] left-0 w-full bg-white border border-black/[0.08] rounded-[12px] shadow-xl z-50 py-1.5 flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-100">
-            <span className="px-3 py-1 text-[10px] font-bold text-stone uppercase tracking-wider">
+          <div className="absolute top-[52px] left-0 w-full bg-[var(--surface-card)] border border-[var(--border-card)] rounded-[12px] shadow-xl z-50 py-1.5 flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-100">
+            <span className="px-3 py-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
               Switch Brand Hub
             </span>
             {workspaces.map((ws) => (
@@ -103,25 +104,27 @@ export function WorkspaceSwitcher({
                   onSelectWorkspace(ws.name);
                   onSelectBrand(ws.brand);
                   setIsOpen(false);
+                  navigate('/assets');
                 }}
                 className={`px-3 py-2 mx-1 text-[12px] rounded-[8px] cursor-pointer transition-colors flex flex-col ${
                   selectedWorkspace === ws.name 
-                    ? 'bg-sky-tint text-notion-blue font-semibold border-l-2 border-notion-blue' 
-                    : 'text-graphite hover:bg-paper-warmth'
+                    ? 'bg-[var(--surface-subtle)] text-[var(--color-brand)] font-semibold border-l-2 border-[var(--color-brand)]' 
+                    : 'text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <span className="truncate">{ws.name}</span>
-                <span className="text-[10px] text-stone font-normal">{ws.plan}</span>
+                <span className="text-[10px] text-[var(--text-muted)] font-normal">{ws.plan}</span>
               </div>
             ))}
-            <div className="h-px bg-black/[0.06] my-1 mx-2" />
+            <div className="h-px bg-[var(--border-card)] my-1 mx-2" />
             <div 
               onClick={() => {
                 onSelectBrand('ALL');
                 onSelectWorkspace('Singha Corporation (Global HQ)');
                 setIsOpen(false);
+                navigate('/assets');
               }}
-              className="px-3 py-1.5 mx-1 text-[12px] text-notion-blue hover:bg-sky-tint rounded-[8px] cursor-pointer flex items-center gap-1.5 font-medium transition-colors"
+              className="px-3 py-1.5 mx-1 text-[12px] text-[var(--color-brand)] hover:bg-[var(--surface-subtle)] rounded-[8px] cursor-pointer flex items-center gap-1.5 font-medium transition-colors"
             >
               <span className="text-[15px] leading-none mb-0.5">↺</span> Reset to All Brands
             </div>
@@ -159,8 +162,8 @@ function NavItem({
       <div 
         className={`group flex items-center justify-between px-2.5 py-[7px] rounded-[8px] cursor-pointer transition-all duration-150 select-none
           ${isActive 
-            ? 'bg-sky-tint text-notion-blue font-semibold' 
-            : 'text-graphite hover:bg-black/5 hover:text-charcoal'
+            ? 'bg-[var(--surface-subtle)] text-[var(--color-brand)] font-semibold' 
+            : 'text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]'
           }
         `}
         style={{ paddingLeft: `${level * 12 + 10}px` }}
@@ -169,7 +172,7 @@ function NavItem({
         <div className="flex items-center gap-2.5 min-w-0">
           <item.icon 
             className={`w-[16px] h-[16px] shrink-0 transition-colors
-              ${isActive ? 'text-notion-blue' : 'text-stone group-hover:text-charcoal'}
+              ${isActive ? 'text-[var(--color-brand)]' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'}
             `} 
             strokeWidth={1.5} 
           />
@@ -180,18 +183,18 @@ function NavItem({
         
         <div className="flex items-center gap-1.5 shrink-0">
           {item.shortcut && (
-             <kbd className="hidden group-hover:inline-flex items-center justify-center h-5 px-1.5 text-[10px] font-medium font-mono text-stone bg-white border border-black/[0.12] rounded-[4px] shadow-xs">
+             <kbd className="hidden group-hover:inline-flex items-center justify-center h-5 px-1.5 text-[10px] font-medium font-mono text-[var(--text-secondary)] bg-[var(--surface-card)] border border-[var(--border-card)] rounded-[4px] shadow-xs">
                {item.shortcut}
              </kbd>
           )}
           {item.badge !== undefined && (
-            <span className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold rounded-full ${isActive ? 'bg-marigold text-charcoal' : 'bg-marigold/20 text-charcoal'}`}>
+            <span className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold rounded-full ${isActive ? 'bg-[#5945F1] text-white' : 'bg-[var(--surface-subtle)] text-[var(--color-brand)]'}`}>
               {item.badge}
             </span>
           )}
           {hasChildren && (
             <ChevronRight 
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${isActive ? 'text-notion-blue' : 'text-stone'} ${isOpen ? 'rotate-90' : ''}`} 
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${isActive ? 'text-[var(--color-brand)]' : 'text-[var(--text-secondary)]'} ${isOpen ? 'rotate-90' : ''}`} 
               strokeWidth={2}
             />
           )}
@@ -201,7 +204,7 @@ function NavItem({
       {hasChildren && isOpen && (
         <div className="overflow-hidden min-h-0 relative flex flex-col gap-0.5 mt-0.5 animate-in fade-in duration-200">
           <div 
-            className="absolute top-0 bottom-0 border-l border-[rgba(0,0,0,0.08)]"
+            className="absolute top-0 bottom-0 border-l border-[var(--border-card)]"
             style={{ left: `${level * 12 + 17.5}px` }}
           />
           {item.children!.map((child) => (
@@ -232,6 +235,7 @@ interface SidebarNavProps {
   pendingRequestsCount: number;
   collectionsCount: number;
   onOpenAuth: () => void;
+  onOpenSearch?: () => void;
 }
 
 export function SidebarNav({ 
@@ -247,13 +251,22 @@ export function SidebarNav({
   pendingRequestsCount,
   collectionsCount,
   onOpenAuth,
+  onOpenSearch,
 }: SidebarNavProps) {
   const navigate = useNavigate();
 
   const navGroups: NavGroupData[] = [
     {
       items: [
-        { id: 'search', title: 'Search & Command', icon: Search, shortcut: '⌘K' },
+        { 
+          id: 'search', 
+          title: 'Search & Command', 
+          icon: Search, 
+          shortcut: '⌘K',
+          action: () => {
+            if (onOpenSearch) onOpenSearch();
+          }
+        },
         { id: 'assets', title: 'Assets Library', icon: LayoutDashboard, path: '/assets' },
         { id: 'collections', title: 'Collections & Kits', icon: FolderKanban, badge: collectionsCount, path: '/collections' },
         { id: 'shares', title: 'Shared Links Vault', icon: Share2, badge: activeShareCount > 0 ? activeShareCount : undefined, path: '/shares' },
@@ -291,22 +304,72 @@ export function SidebarNav({
           badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined,
           path: '/roles',
           children: [
-            { id: 'r-requests', title: 'Registration Queue', icon: Hash, badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined, path: '/roles' },
-            { id: 'r-matrix', title: 'Permission Matrix', icon: Hash, path: '/roles' },
-            { id: 'r-regions', title: 'Dark Market Hubs', icon: Globe, path: '/roles' },
-            { id: 'r-audit', title: 'Security Audit Log', icon: Terminal, path: '/roles' },
+            { id: 'r-requests', title: 'Registration Queue', icon: Hash, badge: pendingRequestsCount > 0 ? pendingRequestsCount : undefined, path: '/roles/requests' },
+            { id: 'r-matrix', title: 'Permission Matrix', icon: Hash, path: '/roles/matrix' },
+            { id: 'r-regions', title: 'Dark Market Hubs', icon: Globe, path: '/roles/regions' },
+            { id: 'r-audit', title: 'Security Audit Log', icon: Terminal, path: '/roles/audit' },
           ]
         },
         {
           id: 'brand-hubs',
           title: 'Brand Portfolios',
           icon: Globe,
+          path: '/assets',
+          action: () => {
+            onBrandSelect('ALL');
+            navigate('/assets');
+          },
           children: [
-            { id: 'b-singha', title: 'Singha Beer', icon: Hash, action: () => onBrandSelect('SINGHA') },
-            { id: 'b-leo', title: 'Leo Beer', icon: Hash, action: () => onBrandSelect('LEO') },
-            { id: 'b-u', title: 'U Beer', icon: Hash, action: () => onBrandSelect('U BEER') },
-            { id: 'b-boonrawd', title: 'Boon Rawd Brewery', icon: Hash, action: () => onBrandSelect('BOON RAWD') },
-            { id: 'b-all', title: 'All Brands (Global)', icon: Hash, action: () => onBrandSelect('ALL') },
+            { 
+              id: 'b-singha', 
+              title: 'Singha Beer', 
+              icon: Hash, 
+              path: '/assets',
+              action: () => {
+                onBrandSelect('SINGHA');
+                navigate('/assets');
+              }
+            },
+            { 
+              id: 'b-leo', 
+              title: 'Leo Beer', 
+              icon: Hash, 
+              path: '/assets',
+              action: () => {
+                onBrandSelect('LEO');
+                navigate('/assets');
+              }
+            },
+            { 
+              id: 'b-u', 
+              title: 'U Beer', 
+              icon: Hash, 
+              path: '/assets',
+              action: () => {
+                onBrandSelect('U BEER');
+                navigate('/assets');
+              }
+            },
+            { 
+              id: 'b-boonrawd', 
+              title: 'Boon Rawd Brewery', 
+              icon: Hash, 
+              path: '/assets',
+              action: () => {
+                onBrandSelect('BOON RAWD');
+                navigate('/assets');
+              }
+            },
+            { 
+              id: 'b-all', 
+              title: 'All Brands (Global)', 
+              icon: Hash, 
+              path: '/assets',
+              action: () => {
+                onBrandSelect('ALL');
+                navigate('/assets');
+              }
+            },
           ]
         }
       ]
@@ -316,10 +379,10 @@ export function SidebarNav({
   const bottomItems: NavItemData[] = [
     { 
       id: 'settings', 
-      title: 'Profile Wizard', 
+      title: 'Platform Settings & Quotas', 
       icon: Settings, 
+      path: '/settings',
       shortcut: '⌘,',
-      action: onOpenAuth 
     },
     { 
       id: 'active-role', 
@@ -330,7 +393,7 @@ export function SidebarNav({
   ];
 
   return (
-    <div className={`flex flex-col w-[260px] h-full bg-white border-r border-[rgba(0,0,0,0.08)] p-3 font-sans shrink-0 ${className}`}>
+    <div className={`flex flex-col w-[260px] h-full bg-[var(--surface-card)] border-r border-[var(--border-card)] p-3 font-sans shrink-0 ${className}`}>
       {/* Brand & Workspace Switcher */}
       <WorkspaceSwitcher 
         selectedWorkspace={activeWorkspace} 
@@ -345,7 +408,7 @@ export function SidebarNav({
         {navGroups.map((group, idx) => (
           <div key={idx} className="flex flex-col gap-0.5">
             {group.heading && (
-              <span className="px-2.5 mb-1 text-[11px] font-bold tracking-wider text-[#757575] uppercase">
+              <span className="px-2.5 mb-1 text-[11px] font-bold tracking-wider text-[var(--text-secondary)] uppercase">
                 {group.heading}
               </span>
             )}
@@ -369,7 +432,7 @@ export function SidebarNav({
       </div>
 
       {/* Bottom Sticky Utility Items */}
-      <div className="mt-auto pt-3 border-t border-[rgba(0,0,0,0.08)] flex flex-col gap-0.5">
+      <div className="mt-auto pt-3 border-t border-[var(--border-card)] flex flex-col gap-0.5">
         {bottomItems.map((item) => (
           <NavItem 
             key={item.id} 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SharedLink, DAMAsset } from '../types/dam';
+import { BentoGrid, BentoCard } from './ui/bento-grid';
 import { 
   Share2, 
   Lock, 
@@ -16,6 +17,16 @@ import {
   CheckCircle2,
   FolderOpen
 } from 'lucide-react';
+import {
+  Link2Icon,
+  LockClosedIcon,
+  ClockIcon,
+  DownloadIcon,
+  Share1Icon,
+  PlusIcon,
+  EyeOpenIcon,
+  FileTextIcon
+} from '@radix-ui/react-icons';
 
 interface ShareLinksManagerProps {
   shares: SharedLink[];
@@ -83,33 +94,112 @@ export const ShareLinksManager: React.FC<ShareLinksManagerProps> = ({
         </button>
       </div>
 
-      {/* KPI Stats Row (Notion 12px hairline cards) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-[12px] p-4">
-          <span className="text-xs text-[#757575] block font-medium">Active Share Links</span>
-          <span className="text-2xl font-bold font-mono tabular-nums text-black mt-1 block">
-            {activeShares.length}
+      {/* Bento Grid Overview */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-black">
+              Link Vault Bento Hub
+            </h2>
+            <span className="notion-pill bg-[#e6f3fe] text-[#0075de]">
+              {activeShares.length} Active Timers
+            </span>
+          </div>
+          <span className="text-xs text-[#757575]">
+            Total {shares.length} links generated
           </span>
         </div>
-        <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-[12px] p-4">
-          <span className="text-xs text-[#757575] block font-medium">Total Recipient Views</span>
-          <span className="text-2xl font-bold font-mono tabular-nums text-black mt-1 block">
-            {totalViews}
-          </span>
-        </div>
-        <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-[12px] p-4">
-          <span className="text-xs text-[#757575] block font-medium">Total File Downloads</span>
-          <span className="text-2xl font-bold font-mono tabular-nums text-black mt-1 block">
-            {totalDownloads}
-          </span>
-        </div>
-        <div className="bg-white border border-[rgba(0,0,0,0.08)] rounded-[12px] p-4">
-          <span className="text-xs text-[#757575] block font-medium">Security Policy</span>
-          <span className="text-sm font-semibold text-[#0075de] mt-1.5 flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-[#0075de]" />
-            <span>Encrypted Expiry</span>
-          </span>
-        </div>
+
+        <BentoGrid className="lg:auto-rows-[16rem]">
+          {/* Card 1: Primary Active Share (Span 2) */}
+          <BentoCard
+            name={activeShares[0] ? activeShares[0].title : "No Active Share Links"}
+            description={
+              activeShares[0]
+                ? `${activeShares[0].assetIds.length} assets bundled · ${getCountdown(activeShares[0].expiresAt)} · ${activeShares[0].viewsCount} views · ${activeShares[0].downloadsCount} downloads`
+                : "Generate an expiring partner bundle to distribute brand assets securely."
+            }
+            Icon={Link2Icon}
+            className="lg:col-span-2"
+            badge={activeShares[0]?.isPasswordProtected ? "Passcode Protected" : "Public Link"}
+            background={
+              <div className="absolute inset-0 bg-gradient-to-br from-[#f6f5f4] via-white to-[#e6f3fe]/40 overflow-hidden">
+                <div className="absolute right-4 top-4 flex gap-2 opacity-70">
+                  {activeShares[0]?.assetIds.slice(0, 3).map((id, i) => {
+                    const asset = assets.find(a => a.id === id);
+                    return (
+                      <div key={i} className="w-20 h-28 rounded-lg overflow-hidden border border-black/10 shadow-sm bg-white">
+                        <img 
+                          src={asset?.url || "/assets/aistudio/SINGHA-brandworld-design-05032018_31699fbc.pdf"} 
+                          alt="thumbnail" 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            }
+            href={activeShares[0] ? `/share/${activeShares[0].id}` : "#"}
+            onClick={activeShares[0] ? () => navigate(`/share/${activeShares[0].id}`) : onOpenCreateShare}
+            cta={activeShares[0] ? "Open Recipient Portal" : "Create First Share"}
+          />
+
+          {/* Card 2: Create Share Link (Span 1) */}
+          <BentoCard
+            name="Create Expiring Link"
+            description="Generate a custom branded URL with strict download access and automated expiry."
+            Icon={PlusIcon}
+            className="lg:col-span-1 bg-gradient-to-br from-[#fffdfa] to-[#ffb110]/10"
+            badge="Instant Setup"
+            background={
+              <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-[#ffb110]/15 blur-2xl pointer-events-none" />
+            }
+            onClick={onOpenCreateShare}
+            cta="New Expiring Share"
+          />
+
+          {/* Card 3: Security & Cryptographic Policy (Span 1) */}
+          <BentoCard
+            name="Cryptographic TTL & Passcodes"
+            description="Expiring access tokens ensure zero-trust distribution across dark markets and regional agencies."
+            Icon={LockClosedIcon}
+            className="lg:col-span-1"
+            badge="Enforced"
+            background={
+              <div className="absolute right-3 bottom-12 p-3 rounded-xl bg-black/5 border border-black/5 text-[11px] font-mono text-[#615d59]">
+                <div>TTL: Auto-Expire</div>
+                <div>Hash: SHA-256 Auth</div>
+              </div>
+            }
+            onClick={() => {}}
+            cta="Review Security Rules"
+          />
+
+          {/* Card 4: Recipient Analytics & Download Velocity (Span 2) */}
+          <BentoCard
+            name="Distribution Analytics & Telemetry"
+            description={`Aggregated traffic: ${totalViews} total portal views and ${totalDownloads} master file downloads recorded across all shared links.`}
+            Icon={DownloadIcon}
+            className="lg:col-span-2"
+            badge={`${totalDownloads} Downloads`}
+            background={
+              <div className="absolute right-6 top-6 flex items-center gap-6 opacity-80">
+                <div className="text-right">
+                  <div className="text-2xl font-bold font-mono text-black">{totalViews}</div>
+                  <div className="text-[10px] text-[#757575] uppercase font-bold tracking-wider">Views</div>
+                </div>
+                <div className="h-8 w-px bg-black/10" />
+                <div className="text-right">
+                  <div className="text-2xl font-bold font-mono text-[#0075de]">{totalDownloads}</div>
+                  <div className="text-[10px] text-[#757575] uppercase font-bold tracking-wider">Downloads</div>
+                </div>
+              </div>
+            }
+            onClick={() => {}}
+            cta="Audit Link Velocity"
+          />
+        </BentoGrid>
       </div>
 
       {/* Links Table */}

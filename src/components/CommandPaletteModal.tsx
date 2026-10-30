@@ -77,42 +77,42 @@ export function CommandPaletteModal({
     : [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] bg-black/40 backdrop-blur-xs px-4 animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] bg-black/60 backdrop-blur-xs px-4 animate-in fade-in duration-150">
       <div className="fixed inset-0" onClick={onClose} />
       
       <div 
-        className="relative w-full max-w-xl bg-white border border-[rgba(0,0,0,0.08)] rounded-[12px] shadow-2xl overflow-hidden flex flex-col z-10"
+        className="relative w-full max-w-xl bg-[var(--surface-card)] border border-[var(--border-card)] rounded-[12px] shadow-2xl overflow-hidden flex flex-col z-10"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 border-b border-[rgba(0,0,0,0.08)] bg-white">
-          <Search className="w-[18px] h-[18px] text-[#757575] mr-3 shrink-0" strokeWidth={1.5} />
+        <div className="flex items-center px-4 border-b border-[var(--border-card)] bg-[var(--surface-card)]">
+          <Search className="w-[18px] h-[18px] text-[var(--text-secondary)] mr-3 shrink-0" strokeWidth={1.5} />
           <input 
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 bg-transparent py-4 outline-none text-[14px] text-black placeholder:text-[#757575]"
+            className="flex-1 bg-transparent py-4 outline-none text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] font-['Geist',sans-serif]"
             placeholder="Search assets, guidelines, or type a command..."
           />
           <kbd 
             onClick={onClose}
-            className="hidden sm:inline-flex items-center justify-center h-5 px-1.5 ml-2 text-[10px] font-medium font-mono text-[#757575] bg-black/5 border border-black/10 rounded-[4px] cursor-pointer hover:text-black hover:bg-black/10 transition-colors"
+            className="hidden sm:inline-flex items-center justify-center h-5 px-1.5 ml-2 text-[10px] font-medium font-mono text-[var(--text-secondary)] bg-[var(--surface-subtle)] border border-[var(--border-card)] rounded-[4px] cursor-pointer hover:text-[var(--text-primary)] transition-colors"
           >
             ESC
           </kbd>
           <button 
             onClick={onClose}
-            className="ml-3 p-1 rounded-md text-[#757575] hover:bg-black/5 hover:text-black transition-colors cursor-pointer"
+            className="ml-3 p-1 rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
           >
             <X className="w-[18px] h-[18px]" strokeWidth={1.5} />
           </button>
         </div>
 
         {/* Results Stream */}
-        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-[rgba(0,0,0,0.04)] text-xs">
+        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-[var(--border-card)] text-xs">
           {/* Quick Actions */}
           <div className="py-1">
-            <span className="px-3 py-1 text-[10px] font-bold text-[#757575] uppercase tracking-wider block">
+            <span className="px-3 py-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
               Quick Actions
             </span>
             <div
@@ -120,20 +120,20 @@ export function CommandPaletteModal({
                 onClose();
                 onOpenUpload();
               }}
-              className="flex items-center justify-between px-3 py-2 rounded-[6px] hover:bg-[#e6f3fe] text-black hover:text-[#0075de] cursor-pointer transition-colors"
+              className="flex items-center justify-between px-3 py-2 rounded-[6px] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] hover:text-[var(--color-brand)] cursor-pointer transition-colors"
             >
               <div className="flex items-center gap-2.5">
-                <Upload className="w-4 h-4 text-[#0075de]" />
+                <Upload className="w-4 h-4 text-[var(--color-brand)]" />
                 <span className="font-medium text-[13px]">Upload New Media Asset with AI</span>
               </div>
-              <span className="notion-pill bg-[#0075de] text-white text-[10px]">Action</span>
+              <span className="notion-pill bg-[var(--color-brand)] text-white text-[10px]">Action</span>
             </div>
           </div>
 
           {/* Matched Assets if searching */}
           {matchedAssets.length > 0 && (
             <div className="py-1">
-              <span className="px-3 py-1 text-[10px] font-bold text-[#757575] uppercase tracking-wider block">
+              <span className="px-3 py-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
                 Matching Assets ({matchedAssets.length})
               </span>
               {matchedAssets.map((asset) => (
@@ -143,24 +143,24 @@ export function CommandPaletteModal({
                     onClose();
                     onSelectAsset(asset);
                   }}
-                  className="flex items-center justify-between px-3 py-2 rounded-[6px] hover:bg-[#f6f5f4] cursor-pointer transition-colors"
+                  className="flex items-center justify-between px-3 py-2 rounded-[6px] hover:bg-[var(--surface-hover)] cursor-pointer transition-colors"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <img
                       src={asset.previewUrl}
                       alt={asset.title}
-                      className="w-7 h-7 rounded-[4px] object-cover shrink-0 border border-[rgba(0,0,0,0.08)]"
+                      className="w-7 h-7 rounded-[4px] object-cover shrink-0 border border-[var(--border-card)]"
                     />
                     <div className="flex flex-col min-w-0">
-                      <span className="font-semibold text-black truncate max-w-[340px]">
+                      <span className="font-semibold text-[var(--text-primary)] truncate max-w-[340px]">
                         {asset.title}
                       </span>
-                      <span className="text-[11px] text-[#757575]">
+                      <span className="text-[11px] text-[var(--text-secondary)]">
                         {asset.brand} · .{asset.fileFormat} · {asset.category}
                       </span>
                     </div>
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#757575]" />
+                  <ArrowRight className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
                 </div>
               ))}
             </div>
@@ -168,7 +168,7 @@ export function CommandPaletteModal({
 
           {/* Navigation Items */}
           <div className="py-1">
-            <span className="px-3 py-1 text-[10px] font-bold text-[#757575] uppercase tracking-wider block">
+            <span className="px-3 py-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
               Pages & Guidelines
             </span>
             {filteredNav.map((item) => {
@@ -180,13 +180,13 @@ export function CommandPaletteModal({
                     onClose();
                     navigate(item.path);
                   }}
-                  className="flex items-center justify-between px-3 py-2 rounded-[6px] hover:bg-[#f6f5f4] text-black cursor-pointer transition-colors"
+                  className="flex items-center justify-between px-3 py-2 rounded-[6px] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] cursor-pointer transition-colors"
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4 text-[#757575]" />
+                    <Icon className="w-4 h-4 text-[var(--text-secondary)]" />
                     <span className="text-[13px]">{item.title}</span>
                   </div>
-                  <span className="text-[10px] text-[#757575] font-mono">{item.category}</span>
+                  <span className="text-[10px] text-[var(--text-secondary)] font-mono">{item.category}</span>
                 </div>
               );
             })}
@@ -194,11 +194,11 @@ export function CommandPaletteModal({
         </div>
 
         {/* Footer info bar */}
-        <div className="px-4 py-2 bg-[#f6f5f4] border-t border-[rgba(0,0,0,0.06)] flex items-center justify-between text-[11px] text-[#757575]">
+        <div className="px-4 py-2 bg-[var(--surface-subtle)] border-t border-[var(--border-card)] flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
           <span>Navigation & System Commands</span>
           <div className="flex items-center gap-2">
-            <span>Press <kbd className="px-1 py-0.5 bg-white border border-[rgba(0,0,0,0.12)] rounded text-[10px]">↵</kbd> to select</span>
-            <span><kbd className="px-1 py-0.5 bg-white border border-[rgba(0,0,0,0.12)] rounded text-[10px]">esc</kbd> to dismiss</span>
+            <span>Press <kbd className="px-1.5 py-0.5 bg-[var(--surface-card)] border border-[var(--border-card)] rounded text-[10px] text-[var(--text-primary)]">↵</kbd> to select</span>
+            <span><kbd className="px-1.5 py-0.5 bg-[var(--surface-card)] border border-[var(--border-card)] rounded text-[10px] text-[var(--text-primary)]">esc</kbd> to dismiss</span>
           </div>
         </div>
       </div>

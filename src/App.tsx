@@ -35,6 +35,7 @@ import { AssetGrid } from './components/AssetGrid';
 import { BulkRenameUpdate } from './components/BulkRenameModal';
 import { AssetDetailModal } from './components/AssetDetailModal';
 import { RightsExpiryAlertWidget } from './components/RightsExpiryAlertWidget';
+import { BatchAiAutoTagModal } from './components/BatchAiAutoTagModal';
 import { WatermarkEngineModal } from './components/WatermarkEngineModal';
 import { AnalyticsView } from './components/AnalyticsView';
 import { ShareModal } from './components/ShareModal';
@@ -45,9 +46,12 @@ import { BrandGuidelinesView } from './components/BrandGuidelinesView';
 import { HandbookView } from './components/HandbookView';
 import { AiLabView } from './components/AiLabView';
 import { RolePermissionManager } from './components/RolePermissionManager';
+import { SettingsView } from './components/SettingsView';
 import { CollectionsManager } from './components/CollectionsManager';
 import { AuthModal } from './components/AuthModal';
 import { ProfileDropdown } from './components/ui/profile-dropdown';
+import { BentoGrid, BentoCard } from './components/ui/bento-grid';
+import { useTheme } from './theme/ThemeContext';
 import { 
   PanelLeftClose, 
   PanelLeftOpen, 
@@ -63,7 +67,10 @@ import {
   LogOut,
   ArrowRight,
   Shield,
-  ExternalLink
+  ExternalLink,
+  HardDrive,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 // Default Role Permissions Matrix with Governance & Watermarking
@@ -126,6 +133,8 @@ const defaultRolePermissions: Record<UserRole, RolePermissions> = {
 };
 
 export default function App() {
+  const { theme, toggleTheme } = useTheme();
+
   // Master Assets State
   const [assets, setAssets] = useState<DAMAsset[]>(() => {
     const saved = localStorage.getItem('singha_dam_assets');
@@ -338,6 +347,7 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeWorkspace, setActiveWorkspace] = useState('Singha Corporation (Global HQ)');
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [showBentoSpotlight, setShowBentoSpotlight] = useState(true);
 
   // Global Keyboard Shortcut: ⌘K for search palette, ⌘, for settings/profile
   useEffect(() => {
@@ -385,6 +395,10 @@ export default function App() {
   // Dynamic Watermark Engine State
   const [watermarkModalAsset, setWatermarkModalAsset] = useState<DAMAsset | null>(null);
   const [isWatermarkModalOpen, setIsWatermarkModalOpen] = useState(false);
+
+  // Batch AI Auto-Tagging State
+  const [isBatchAiTagModalOpen, setIsBatchAiTagModalOpen] = useState(false);
+  const [batchAiTagAssets, setBatchAiTagAssets] = useState<DAMAsset[]>([]);
 
   // AI Semantic Search State
   const [isAiSearching, setIsAiSearching] = useState(false);
@@ -670,6 +684,26 @@ export default function App() {
     document.body.removeChild(link);
   };
 
+  // Batch AI Auto-Tagging
+  const handleOpenBatchAiTag = (assetsToTag: DAMAsset[]) => {
+    setBatchAiTagAssets(assetsToTag);
+    setIsBatchAiTagModalOpen(true);
+  };
+
+  const handleApplyBatchAiUpdates = (updatedAssets: DAMAsset[]) => {
+    const updatedMap = new Map(updatedAssets.map((a) => [a.id, a]));
+    setAssets((prev) => prev.map((asset) => updatedMap.get(asset.id) || asset));
+
+    if (activeDetailAsset && updatedMap.has(activeDetailAsset.id)) {
+      setActiveDetailAsset(updatedMap.get(activeDetailAsset.id)!);
+    }
+
+    addAuditLog(
+      'METADATA_EDIT',
+      `AI Vision auto-tagged ${updatedAssets.length} assets with Gemini 3.8 Flash (updated objects, faces, colors, tags)`
+    );
+  };
+
   // Batch Delete
   const handleBatchDelete = (idsToDelete: string[]) => {
     if (!currentPermissions.canDelete) {
@@ -834,12 +868,130 @@ export default function App() {
         onLogAudit={(action, details) => addAuditLog(action as any, details)}
       />
 
+      {/* Bento Spotlight Hub for Assets Library */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[var(--color-brand)]"></span>
+            <span className="text-xs font-bold text-[var(--text-primary)] font-['Bricolage_Grotesque',sans-serif]">
+              Bento Asset Spotlight & Curated Hubs
+            </span>
+          </div>
+          <button
+            onClick={() => setShowBentoSpotlight(!showBentoSpotlight)}
+            className="text-[11px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer flex items-center gap-1 transition-colors font-['Geist',sans-serif]"
+          >
+            <span>{showBentoSpotlight ? 'Collapse Spotlight' : 'Expand Bento Spotlight'}</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showBentoSpotlight ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+
+        {showBentoSpotlight && (
+          <BentoGrid className="lg:grid-cols-3 auto-rows-[16rem]">
+            {/* Bento 1: 2026 Global Campaign Pack (Span 2) */}
+            <BentoCard
+              name="2026 Global Brand Campaign & Lifestyle"
+              description="Approved high-resolution key visuals, glassware toasts, and rooftop social celebrations."
+              badge="Curated Pack · 3 Assets"
+              Icon={Sparkles}
+              className="lg:col-span-2"
+              background={
+                <div className="w-full h-full relative overflow-hidden bg-[var(--surface-subtle)]">
+                  <img
+                    src="/src/assets/images/singha_beer_lifestyle_toast_1793083582441.jpg"
+                    alt="Singha 2026 Lifestyle"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-card)] via-[var(--surface-card)]/80 to-transparent" />
+                </div>
+              }
+              cta="Filter Campaign Assets"
+              onClick={() => {
+                setFilters((f) => ({ ...f, collectionId: 'col-global-2026' }));
+                navigate('/collections/col-global-2026');
+              }}
+            />
+
+            {/* Bento 2: Legal Dark Market Vector Kit (Span 1) */}
+            <BentoCard
+              name="Dark Market Compliance Kit"
+              description="Official white-on-yellow vector symbols for markets with strict alcohol advertising prohibitions."
+              badge="Strict Legal · 100% Cleared"
+              Icon={ShieldCheck}
+              className="lg:col-span-1"
+              background={
+                <div className="w-full h-full relative overflow-hidden bg-amber-500/10 flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full border-4 border-[var(--border-card)] flex items-center justify-center font-bold text-[var(--text-secondary)] text-xl font-mono">
+                    1933
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-card)] via-[var(--surface-card)]/80 to-transparent" />
+                </div>
+              }
+              cta="Filter Dark Market"
+              onClick={() => {
+                setFilters((f) => ({ ...f, marketSuitability: 'Dark Market Compliant' }));
+              }}
+            />
+
+            {/* Bento 3: Packaging & Can Dielines (Span 1) */}
+            <BentoCard
+              name="Packaging Dielines & 330ml Can Blueprints"
+              description="Technical vector blueprints for aluminum cans, 630ml bottles, and 6-pack master cartons."
+              badge="Vector Assets · Print Master"
+              Icon={HardDrive}
+              className="lg:col-span-1"
+              background={
+                <div className="w-full h-full relative overflow-hidden bg-[var(--surface-subtle)] flex items-center justify-center">
+                  <img
+                    src="/src/assets/images/singha_packaging_can_ice_1793083582580.jpg"
+                    alt="Packaging Dieline"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover opacity-35 group-hover:scale-105 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-card)] via-[var(--surface-card)]/80 to-transparent" />
+                </div>
+              }
+              cta="Filter Packaging"
+              onClick={() => {
+                setFilters((f) => ({ ...f, category: 'Packaging & Vectors' }));
+              }}
+            />
+
+            {/* Bento 4: Most Utilized Brand Asset (Span 2) */}
+            <BentoCard
+              name="Top Downloaded Master: Singha 330ml Can On Ice"
+              description="300 DPI CMYK retail packaging visual with 1,248 logged direct downloads and 410 agency shares."
+              badge="Velocity #1 · 1,248 Downloads"
+              Icon={ArrowRight}
+              className="lg:col-span-2"
+              background={
+                <div className="w-full h-full relative overflow-hidden bg-[var(--surface-subtle)]">
+                  <img
+                    src="/src/assets/images/singha_craft_bottle_bar_1793083583140.jpg"
+                    alt="Top Downloaded Master"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface-card)] via-[var(--surface-card)]/80 to-transparent" />
+                </div>
+              }
+              cta="Inspect Asset"
+              onClick={() => {
+                const topA = assets.find((a) => a.id === 'asset-can-ice');
+                if (topA) setActiveDetailAsset(topA);
+              }}
+            />
+          </BentoGrid>
+        )}
+      </div>
+
       {/* Active Collection Filter Bar if clicked from Collections or URL */}
       {activeCollectionId && (
-        <div className="p-3 bg-sky-tint border border-notion-blue/25 rounded-[12px] flex items-center justify-between text-xs text-charcoal animate-in fade-in">
+        <div className="p-3 bg-[var(--surface-subtle)] border border-[var(--border-card)] rounded-[12px] flex items-center justify-between text-xs text-[var(--text-primary)] animate-in fade-in">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-notion-blue">Active Collection:</span>
-            <span className="text-graphite">
+            <span className="font-bold text-[var(--color-brand)]">Active Collection:</span>
+            <span className="text-[var(--text-secondary)] font-medium">
               {collections.find((c) => c.id === activeCollectionId)?.title || activeCollectionId}
             </span>
           </div>
@@ -848,7 +1000,7 @@ export default function App() {
               setFilters((f) => ({ ...f, collectionId: null }));
               navigate('/assets');
             }}
-            className="font-semibold text-notion-blue hover:underline cursor-pointer"
+            className="font-semibold text-[var(--color-brand)] hover:underline cursor-pointer"
           >
             Clear Collection Filter
           </button>
@@ -879,9 +1031,7 @@ export default function App() {
           onOpenDetail={(asset) => setActiveDetailAsset(asset)}
           onBatchShare={(selected) => handleOpenShareModal(selected)}
           onBatchDownload={handleBatchDownload}
-          onBatchAiTag={(selected) => {
-            if (selected.length > 0) setActiveDetailAsset(selected[0]);
-          }}
+          onBatchAiTag={handleOpenBatchAiTag}
           onBatchAddToCollection={handleBatchAddToCollection}
           onBatchDelete={handleBatchDelete}
           onBatchRename={handleBatchRename}
@@ -892,6 +1042,8 @@ export default function App() {
           onDownloadSingle={handleDownloadSingle}
           semanticMatchScores={semanticMatches}
           canDelete={currentPermissions.canDelete}
+          activeCategory={filters.category}
+          onSelectCategory={(cat) => setFilters((f) => ({ ...f, category: cat as any }))}
         />
       </div>
     </div>
@@ -911,13 +1063,27 @@ export default function App() {
     }
   } else if (currentPath.startsWith('/guidelines')) {
     activeNavId = 'guidelines';
-    if (currentPath.includes('/master')) activeTitle = 'Guidelines / 01. Master Logo';
-    else if (currentPath.includes('/dark')) activeTitle = 'Guidelines / 02. Dark Market Logo';
-    else if (currentPath.includes('/secondary')) activeTitle = 'Guidelines / 03. ESTD 1933 Mark';
-    else if (currentPath.includes('/color')) activeTitle = 'Guidelines / 04. Color Breakdown';
-    else if (currentPath.includes('/font')) activeTitle = 'Guidelines / 05. Typography';
-    else if (currentPath.includes('/intro')) activeTitle = 'Guidelines / 06. Introduction';
-    else activeTitle = 'Brand Guidelines';
+    if (currentPath.includes('/master')) {
+      activeTitle = 'Guidelines / 01. Master Logo';
+      activeNavId = 'g-master';
+    } else if (currentPath.includes('/dark')) {
+      activeTitle = 'Guidelines / 02. Dark Market Logo';
+      activeNavId = 'g-dark';
+    } else if (currentPath.includes('/secondary')) {
+      activeTitle = 'Guidelines / 03. ESTD 1933 Mark';
+      activeNavId = 'g-secondary';
+    } else if (currentPath.includes('/color')) {
+      activeTitle = 'Guidelines / 04. Color Breakdown';
+      activeNavId = 'g-color';
+    } else if (currentPath.includes('/font')) {
+      activeTitle = 'Guidelines / 05. Typography';
+      activeNavId = 'g-font';
+    } else if (currentPath.includes('/intro')) {
+      activeTitle = 'Guidelines / 06. Introduction';
+      activeNavId = 'g-intro';
+    } else {
+      activeTitle = 'Brand Guidelines';
+    }
   } else if (currentPath.startsWith('/shares')) {
     activeTitle = 'Shared Links Vault';
     activeNavId = 'shares';
@@ -925,14 +1091,31 @@ export default function App() {
     activeTitle = 'DAM Analytics & Insights';
     activeNavId = 'analytics';
   } else if (currentPath.startsWith('/roles')) {
-    activeTitle = 'Global RBAC & Governance';
     activeNavId = 'roles';
+    if (currentPath.includes('/requests')) {
+      activeTitle = 'Governance / Registration Queue';
+      activeNavId = 'r-requests';
+    } else if (currentPath.includes('/matrix')) {
+      activeTitle = 'Governance / Permission Matrix';
+      activeNavId = 'r-matrix';
+    } else if (currentPath.includes('/regions')) {
+      activeTitle = 'Governance / Dark Market Hubs';
+      activeNavId = 'r-regions';
+    } else if (currentPath.includes('/audit')) {
+      activeTitle = 'Governance / Security Audit Log';
+      activeNavId = 'r-audit';
+    } else {
+      activeTitle = 'Global RBAC & Governance';
+    }
   } else if (currentPath.startsWith('/handbook')) {
     activeTitle = 'Official Handbook';
     activeNavId = 'handbook';
   } else if (currentPath.startsWith('/ai-lab')) {
     activeTitle = 'AI Recognition Lab';
     activeNavId = 'ai-lab';
+  } else if (currentPath.startsWith('/settings')) {
+    activeTitle = 'Platform Settings & Quotas';
+    activeNavId = 'settings';
   }
 
   const rolesList: UserRole[] = [
@@ -952,16 +1135,16 @@ export default function App() {
   ];
 
   return (
-    <div className="flex h-screen bg-[#f6f5f4] text-black overflow-hidden font-sans">
+    <div className="flex h-screen bg-[var(--surface-app)] text-[var(--text-primary)] overflow-hidden font-sans">
       
       {/* Collapsible Sidebar from user specification */}
       <div 
-        className={`h-full transition-all duration-300 ease-in-out shrink-0 overflow-hidden bg-white border-r border-[rgba(0,0,0,0.08)] ${
+        className={`h-full transition-all duration-300 ease-in-out shrink-0 overflow-hidden bg-[var(--surface-card)] border-r border-[var(--border-card)] ${
           isSidebarOpen ? 'w-[260px] opacity-100' : 'w-0 opacity-0 border-none'
         }`}
       >
         <SidebarNav 
-          className="w-[260px] border-none bg-transparent"
+          className="w-[260px] border-none bg-[var(--surface-card)]"
           activeId={activeNavId}
           onSelect={(item) => {
             if (item.id === 'search') setIsCommandPaletteOpen(true);
@@ -975,47 +1158,62 @@ export default function App() {
           pendingRequestsCount={accountRequests.filter((r) => r.status === 'Pending').length}
           collectionsCount={collections.length}
           onOpenAuth={() => setIsAuthModalOpen(true)}
+          onOpenSearch={() => setIsCommandPaletteOpen(true)}
         />
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-[#f6f5f4]">
+      <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-[var(--surface-app)] text-[var(--text-primary)]">
         
-        {/* Top Header Bar - Clean Notion Design strictly aligned with index.css */}
-        <div className="h-16 border-b border-black/[0.08] flex items-center px-4 sm:px-6 justify-between bg-white shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+        {/* Top Header Bar - Figma Theme Tokens strictly aligned with index.css */}
+        <div className="h-16 border-b border-[var(--border-card)] flex items-center px-4 sm:px-6 justify-between bg-[var(--surface-card)] shrink-0 shadow-xs">
           {/* Left Zone: Sidebar toggle & Breadcrumbs */}
           <div className="flex items-center gap-3 min-w-0">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 rounded-[8px] text-stone hover:bg-paper-warmth hover:text-charcoal transition-colors cursor-pointer shrink-0"
+              className="p-2 rounded-[8px] text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-colors cursor-pointer shrink-0"
               title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
             >
               {isSidebarOpen ? <PanelLeftClose className="w-[18px] h-[18px]" strokeWidth={1.5} /> : <PanelLeftOpen className="w-[18px] h-[18px]" strokeWidth={1.5} />}
             </button>
 
-            <div className="flex items-center gap-2 text-[13px] text-stone min-w-0 font-sans">
-              <span className="truncate max-w-[200px] font-medium hidden sm:inline text-graphite">
+            <div className="flex items-center gap-2 text-[13px] text-[var(--text-secondary)] min-w-0 font-sans">
+              <span className="truncate max-w-[200px] font-medium hidden sm:inline text-[var(--text-primary)]">
                 {activeWorkspace}
               </span>
-              <span className="hidden sm:inline text-black/20 font-normal">/</span>
-              <span className="font-bold text-charcoal truncate tracking-tight">{activeTitle}</span>
+              <span className="hidden sm:inline text-[var(--text-muted)] font-normal">/</span>
+              <span className="font-bold text-[var(--text-primary)] truncate tracking-tight">{activeTitle}</span>
             </div>
           </div>
 
-          {/* Right Zone: Search, Upload, and User Profile with Role Switcher */}
-          <div className="flex items-center gap-3">
+          {/* Right Zone: Search, Upload, Theme Toggle, and User Profile with Role Switcher */}
+          <div className="flex items-center gap-2.5">
             {/* Quick Search Command Trigger */}
             <button
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="hidden md:flex items-center justify-between w-56 lg:w-64 h-10 px-3 bg-paper-warmth hover:bg-black/5 border border-black/[0.08] rounded-[8px] text-stone text-[12px] cursor-pointer transition-colors shadow-xs"
+              className="hidden md:flex items-center justify-between w-52 lg:w-60 h-10 px-3 bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] border border-[var(--border-card)] rounded-[8px] text-[var(--text-secondary)] text-[12px] cursor-pointer transition-colors shadow-xs"
             >
               <div className="flex items-center gap-2">
-                <Search className="w-3.5 h-3.5 text-stone" />
-                <span className="truncate">Search assets or jump to...</span>
+                <Search className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+                <span className="truncate">Search or jump to...</span>
               </div>
-              <kbd className="inline-flex items-center justify-center h-5 px-1.5 text-[10px] font-medium font-mono text-stone bg-white border border-black/[0.12] rounded-[4px] shadow-xs">
+              <kbd className="inline-flex items-center justify-center h-5 px-1.5 text-[10px] font-medium font-mono text-[var(--text-secondary)] bg-[var(--surface-card)] border border-[var(--border-card)] rounded-[4px] shadow-xs">
                 ⌘K
               </kbd>
+            </button>
+
+            {/* Figma Token Dual-Theme Mode Toggle (Sun / Moon) */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-[8px] border border-[var(--border-card)] bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] flex items-center justify-center transition-all cursor-pointer shadow-xs"
+              title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-[#CAEB0E] transition-transform hover:rotate-45" />
+              ) : (
+                <Moon className="w-4 h-4 text-[#5945F1] transition-transform hover:-rotate-12" />
+              )}
             </button>
 
             {/* Upload Button */}
@@ -1034,7 +1232,7 @@ export default function App() {
               data={{
                 name: userSession.name,
                 email: userSession.email,
-                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+                avatar: "",
                 subscription: "Enterprise Custodian",
                 model: "Gemini 2.5 Flash",
                 companyName: userSession.companyName,
@@ -1044,11 +1242,14 @@ export default function App() {
               }}
               currentRole={userSession.role}
               onSwitchRole={handleSwitchRole}
-              onOpenSettings={() => navigate('/roles')}
+              onOpenSettings={() => navigate('/roles/matrix')}
               onOpenGuidelines={() => navigate('/guidelines')}
               onOpenShares={() => navigate('/shares')}
               onOpenAuth={() => setIsAuthModalOpen(true)}
               onSignOut={() => setIsAuthModalOpen(true)}
+              onOpenAiLab={() => navigate('/ai-lab')}
+              onOpenAnalytics={() => navigate('/analytics')}
+              onOpenProfileSettings={() => navigate('/settings')}
             />
           </div>
         </div>
@@ -1140,6 +1341,36 @@ export default function App() {
                 />
               }
             />
+            <Route
+              path="/roles/:tab"
+              element={
+                <RolePermissionManager
+                  currentUser={userSession}
+                  onSwitchRole={handleSwitchRole}
+                  accountRequests={accountRequests}
+                  onApproveRequest={handleApproveRequest}
+                  onRejectRequest={handleRejectRequest}
+                  rolePermissions={rolePermissions}
+                  onUpdateRolePermissions={(role, perms) => {
+                    setRolePermissions((prev) => ({ ...prev, [role]: perms }));
+                    addAuditLog('ROLE_CHANGE', `Updated permission matrix for ${role}`);
+                  }}
+                  auditLogs={auditLogs}
+                />
+              }
+            />
+
+            <Route
+              path="/settings"
+              element={
+                <SettingsView
+                  userSession={userSession}
+                  onUpdateSession={setUserSession}
+                  onSwitchRole={handleSwitchRole}
+                  onOpenAuthModal={() => setIsAuthModalOpen(true)}
+                />
+              }
+            />
 
             <Route path="/handbook" element={<HandbookView />} />
 
@@ -1212,6 +1443,16 @@ export default function App() {
           onClose={() => setIsWatermarkModalOpen(false)}
           userSession={userSession}
           isMandatoryForRole={userSession.role === 'Agency Partner'}
+        />
+      )}
+
+      {/* Batch AI Auto-Tagging Modal */}
+      {isBatchAiTagModalOpen && (
+        <BatchAiAutoTagModal
+          isOpen={isBatchAiTagModalOpen}
+          onClose={() => setIsBatchAiTagModalOpen(false)}
+          selectedAssets={batchAiTagAssets}
+          onApplyUpdates={handleApplyBatchAiUpdates}
         />
       )}
 

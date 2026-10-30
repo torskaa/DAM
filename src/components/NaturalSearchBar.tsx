@@ -48,14 +48,14 @@ export const NaturalSearchBar: React.FC<NaturalSearchBarProps> = ({
   };
 
   return (
-    <div className="w-full bg-white border border-black/[0.08] rounded-[12px] p-4 mb-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="w-full bg-[var(--surface-card)] border border-[var(--border-card)] rounded-xl p-3 sm:p-4 mb-5 shadow-xs">
       <form onSubmit={handleSubmit} className="relative flex items-center gap-2">
         <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--text-secondary)]">
             {isAiSearching ? (
-              <Loader2 className="w-4 h-4 animate-spin text-notion-blue" />
+              <Loader2 className="w-4 h-4 animate-spin text-[var(--color-brand)]" />
             ) : (
-              <Search className="w-4 h-4 text-stone" />
+              <Search className="w-4 h-4 text-[var(--text-secondary)]" />
             )}
           </div>
 
@@ -66,15 +66,15 @@ export const NaturalSearchBar: React.FC<NaturalSearchBarProps> = ({
               setLocalInput(e.target.value);
               onSearchChange(e.target.value);
             }}
-            placeholder="Search by visual mood, setting, or campaign (e.g. 'friends toasting rooftop sunset', 'ขวดเบียร์หยดน้ำบนเคาน์เตอร์ไม้')..."
-            className="w-full pl-10 pr-10 py-2.5 text-[13px] bg-paper-warmth hover:bg-black/[0.03] focus:bg-white border border-black/[0.08] focus:border-notion-blue focus:ring-3 focus:ring-notion-blue/15 rounded-[8px] transition-all outline-none text-charcoal placeholder:text-stone font-sans"
+            placeholder="Search by visual mood, setting, or campaign (e.g. 'friends toasting rooftop sunset', 'ขวดเบียร์หยดน้ำ')..."
+            className="w-full pl-10 pr-10 py-2.5 text-[13px] bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-card)] border border-[var(--border-card)] focus:border-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/20 rounded-lg transition-all outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-sans"
           />
 
           {localInput && (
             <button
               type="button"
               onClick={handleClear}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-stone hover:text-charcoal cursor-pointer"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
               title="Clear search"
             >
               <X className="w-4 h-4" />
@@ -85,41 +85,37 @@ export const NaturalSearchBar: React.FC<NaturalSearchBarProps> = ({
         <button
           type="submit"
           disabled={isAiSearching}
-          className="notion-btn-primary h-[42px] px-4 py-2.5 rounded-[8px] flex items-center gap-2 transition-all cursor-pointer shrink-0 disabled:opacity-50 shadow-xs"
+          className="bg-[var(--color-brand)] hover:brightness-110 text-white h-[42px] px-4 rounded-lg flex items-center gap-2 transition-all cursor-pointer shrink-0 disabled:opacity-50 text-xs font-medium shadow-xs"
         >
           <span>Find Assets</span>
           <kbd className="hidden sm:inline-block text-[10px] text-white/80 font-mono bg-white/20 px-1.5 py-0.5 rounded">↵</kbd>
         </button>
       </form>
 
-      {/* Suggested Creative Query Inspirations */}
-      <div className="mt-3 flex items-center gap-2 flex-wrap text-xs text-stone">
-        <span className="font-medium text-graphite whitespace-nowrap">Suggested moods:</span>
+      {/* Suggested Creative Query Inspirations (Fastwork style quick tags) */}
+      <div className="mt-2.5 flex items-center gap-2 flex-wrap text-xs">
+        <span className="text-[11px] font-medium text-[var(--text-secondary)] whitespace-nowrap">Suggested moods:</span>
         <div className="flex items-center gap-1.5 flex-wrap">
           {samplePrompts.map((p, idx) => (
-            <React.Fragment key={idx}>
-              <button
-                type="button"
-                onClick={() => handlePickSample(p.query)}
-                className="text-graphite hover:text-notion-blue hover:underline transition-colors cursor-pointer text-[12px]"
-              >
-                {p.label}
-              </button>
-              {idx < samplePrompts.length - 1 && (
-                <span className="text-black/20 select-none">·</span>
-              )}
-            </React.Fragment>
+            <button
+              key={idx}
+              type="button"
+              onClick={() => handlePickSample(p.query)}
+              className="px-2 py-0.5 rounded-md text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] border border-[var(--border-card)] transition-colors cursor-pointer"
+            >
+              {p.label}
+            </button>
           ))}
         </div>
       </div>
 
       {/* Active Curator Context Analysis */}
       {activeAiInterpretation && (
-        <div className="mt-3.5 pt-3 border-t border-black/[0.06] flex items-start gap-2.5 text-xs text-graphite animate-in fade-in">
-          <div className="w-1.5 h-1.5 rounded-full bg-notion-blue mt-1.5 shrink-0" />
+        <div className="mt-3 pt-2.5 border-t border-[var(--border-card)] flex items-start gap-2.5 text-xs text-[var(--text-secondary)] animate-in fade-in">
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-brand)] mt-1.5 shrink-0" />
           <div className="flex-1 leading-relaxed">
-            <strong className="text-charcoal font-semibold">Curator Interpretation:</strong> {activeAiInterpretation}
-            <span className="ml-2 text-stone font-mono tabular-nums">({totalResults} matches found)</span>
+            <strong className="text-[var(--text-primary)] font-semibold">AI Curator Analysis:</strong> {activeAiInterpretation}
+            <span className="ml-2 text-[var(--text-muted)] font-mono tabular-nums">({totalResults} matches found)</span>
           </div>
         </div>
       )}
